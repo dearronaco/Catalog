@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dear Rona – Katalog</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blush:#F2C4CE;--blush-light:#FAE8ED;--ivory:#FDF8F5;
+  --mauve:#C4879A;--plum:#4A2030;--plum-mid:#7D3A52;
+  --sage:#8FA68E;--cream:#F7EDE4;--text:#2E1A24;
+  --text-soft:#8A6070;--white:#FFFFFF;
+  --shadow:0 4px 24px rgba(74,32,48,.10);
+  --shadow-hover:0 12px 40px rgba(74,32,48,.18);
+  --radius:16px;--radius-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--text);min-height:100vh;}
+
+/* PETALS */
+.petals-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.petal{position:absolute;top:-40px;width:14px;height:18px;background:var(--blush);border-radius:50% 0 50% 0;opacity:.45;animation:fall linear infinite;}
+@keyframes fall{0%{transform:translateY(0) rotate(0deg) translateX(0);opacity:.45}100%{transform:translateY(110vh) rotate(360deg) translateX(60px);opacity:0}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(253,248,245,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--blush);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-brand{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--plum);letter-spacing:.04em;}
+.nav-brand span{color:var(--mauve);font-style:italic;}
+.nav-links{display:flex;gap:16px;align-items:center;}
+.nav-links a{font-size:.85rem;font-weight:500;color:var(--text-soft);text-decoration:none;letter-spacing:.05em;text-transform:uppercase;transition:color .2s;}
+.nav-links a:hover{color:var(--plum);}
+.btn-admin{background:var(--plum);color:var(--white);border:none;padding:8px 18px;border-radius:20px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;transition:background .2s,transform .1s;}
+.btn-admin:hover{background:var(--plum-mid);transform:translateY(-1px);}
+.btn-pesan{background:var(--mauve);color:var(--white);border:none;padding:8px 18px;border-radius:20px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;transition:background .2s,transform .1s;}
+.btn-pesan:hover{background:var(--plum-mid);transform:translateY(-1px);}
+
+/* HERO */
+.hero{position:relative;z-index:1;padding:80px 40px 60px;text-align:center;background:linear-gradient(160deg,var(--blush-light) 0%,var(--ivory) 60%,var(--cream) 100%);}
+.hero-eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--mauve);margin-bottom:16px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,6vw,4rem);font-weight:700;color:var(--plum);line-height:1.15;margin-bottom:16px;}
+.hero h1 em{color:var(--mauve);font-style:italic;}
+.hero p{font-size:1rem;color:var(--text-soft);max-width:480px;margin:0 auto 32px;line-height:1.7;}
+.hero-meta{display:flex;justify-content:center;gap:32px;font-size:.8rem;color:var(--text-soft);}
+.hero-meta strong{color:var(--plum);display:block;font-size:1.1rem;font-weight:700;}
+.hero-cta{display:flex;gap:12px;justify-content:center;margin-top:28px;}
+.btn-hero-pesan{background:var(--plum);color:white;border:none;padding:14px 32px;border-radius:30px;font-family:'Inter',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .2s;box-shadow:0 6px 20px rgba(74,32,48,.25);}
+.btn-hero-pesan:hover{background:var(--plum-mid);transform:translateY(-2px);box-shadow:0 10px 28px rgba(74,32,48,.3);}
+.btn-hero-custom{background:transparent;color:var(--plum);border:2px solid var(--plum);padding:13px 28px;border-radius:30px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;}
+.btn-hero-custom:hover{background:var(--blush-light);}
+
+/* CATALOG */
+.catalog-wrapper{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start;}
+.sidebar{position:sticky;top:84px;background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:28px;}
+.filter-section h3{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:600;color:var(--plum);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--blush);}
+.color-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s;}
+.color-dot:hover{transform:scale(1.15);}
+.color-dot.active{border-color:var(--plum);transform:scale(1.1);}
+.color-dot-all{width:34px!important;height:34px!important;background:linear-gradient(135deg,#F2C4CE,#C4879A,#8FA68E,#B0D0F0,#F7DC6F)!important;}
+.type-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:500;letter-spacing:.04em;border:1.5px solid var(--blush);background:transparent;color:var(--text-soft);cursor:pointer;transition:all .18s;}
+.tag:hover{border-color:var(--mauve);color:var(--mauve);}
+.tag.active{background:var(--plum);border-color:var(--plum);color:var(--white);}
+.size-grid{display:flex;gap:8px;}
+.size-btn{flex:1;padding:8px 4px;text-align:center;border:1.5px solid var(--blush);border-radius:var(--radius-sm);font-size:.8rem;font-weight:600;color:var(--text-soft);cursor:pointer;transition:all .18s;background:transparent;}
+.size-btn:hover{border-color:var(--mauve);color:var(--mauve);}
+.size-btn.active{background:var(--plum);border-color:var(--plum);color:var(--white);}
+.price-range-display{display:flex;justify-content:space-between;font-size:.78rem;color:var(--text-soft);margin-bottom:10px;}
+.price-range-display span{font-weight:600;color:var(--plum);}
+input[type=range]{width:100%;accent-color:var(--mauve);height:4px;cursor:pointer;}
+.btn-reset{width:100%;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--blush);background:transparent;font-size:.8rem;font-weight:500;color:var(--text-soft);cursor:pointer;transition:all .18s;}
+.btn-reset:hover{border-color:var(--mauve);color:var(--mauve);}
+
+/* PRODUCT GRID */
+.products-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.products-count{font-size:.85rem;color:var(--text-soft);}
+.products-count strong{color:var(--plum);}
+.sort-select{padding:8px 14px;border-radius:20px;border:1.5px solid var(--blush);background:var(--white);font-family:'Inter',sans-serif;font-size:.82rem;color:var(--text);cursor:pointer;outline:none;}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+.product-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .25s,box-shadow .25s;cursor:pointer;position:relative;}
+.product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-hover);}
+.card-image{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--blush-light);}
+.card-image-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--blush-light);}
+.card-badge{position:absolute;top:12px;left:12px;background:var(--plum);color:var(--white);font-size:.65rem;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:10px;text-transform:uppercase;}
+.card-color-dot{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.card-body{padding:16px;}
+.card-type{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mauve);margin-bottom:4px;}
+.card-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--plum);margin-bottom:6px;line-height:1.3;}
+.card-desc{font-size:.78rem;color:var(--text-soft);line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;}
+.card-price{font-size:.95rem;font-weight:700;color:var(--plum);}
+.card-size{font-size:.7rem;color:var(--text-soft);background:var(--cream);padding:2px 8px;border-radius:10px;}
+.card-order-btn{position:absolute;bottom:0;left:0;right:0;background:var(--plum);color:white;border:none;padding:10px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;letter-spacing:.04em;opacity:0;transform:translateY(4px);transition:all .2s;}
+.product-card:hover .card-order-btn{opacity:1;transform:translateY(0);}
+.no-results{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-soft);}
+.no-results .emoji{font-size:3rem;margin-bottom:12px;}
+
+/* MODALS SHARED */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(74,32,48,.55);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+@keyframes modalIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* PRODUCT DETAIL MODAL */
+.modal{background:var(--white);border-radius:var(--radius);max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(74,32,48,.25);animation:modalIn .25s ease;}
+.modal-image{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--blush-light);border-radius:var(--radius) var(--radius) 0 0;}
+.modal-image-placeholder{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--blush-light);border-radius:var(--radius) var(--radius) 0 0;}
+.modal-body{padding:28px;}
+.modal-meta{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+.modal-badge{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mauve);background:var(--blush-light);padding:3px 10px;border-radius:10px;}
+.modal-name{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--plum);margin-bottom:8px;}
+.modal-desc{font-size:.9rem;color:var(--text-soft);line-height:1.7;margin-bottom:20px;}
+.modal-sizes h4{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-soft);margin-bottom:10px;}
+.modal-size-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.modal-size-item{border:1.5px solid var(--blush);border-radius:var(--radius-sm);padding:8px 16px;text-align:center;}
+.modal-size-item .sz{font-weight:700;color:var(--plum);font-size:.9rem;}
+.modal-size-item .pr{font-size:.75rem;color:var(--text-soft);}
+.modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:36px;height:36px;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--plum);box-shadow:var(--shadow);}
+.btn-pesan-produk{width:100%;padding:13px;background:var(--mauve);color:white;border:none;border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px;}
+.btn-pesan-produk:hover{background:var(--plum);}
+
+/* ── SOCIAL FLOATING ── */
+.social-dock{position:fixed;right:20px;bottom:90px;z-index:150;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+.social-btn{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:transform .18s,box-shadow .18s;text-decoration:none;}
+.social-btn:hover{transform:scale(1.12);box-shadow:0 8px 20px rgba(0,0,0,.22);}
+.social-btn svg{width:22px;height:22px;}
+.social-btn.ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);}
+.social-btn.tt{background:#000;}
+.social-btn.sp{background:#EE4D2D;}
+.social-label{font-size:.65rem;font-weight:600;color:var(--text-soft);letter-spacing:.04em;margin-right:4px;opacity:0;transition:opacity .18s;}
+.social-dock:hover .social-label{opacity:1;}
+.social-row{display:flex;align-items:center;gap:6px;}
+
+/* ── PESAN MODAL WIZARD ── */
+.pesan-overlay{position:fixed;inset:0;z-index:250;background:rgba(74,32,48,.6);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px;}
+.pesan-overlay.open{display:flex;}
+.pesan-panel{background:var(--white);border-radius:var(--radius);width:100%;max-width:640px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 100px rgba(74,32,48,.3);animation:modalIn .25s ease;}
+.pesan-header{background:var(--plum);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;}
+.pesan-header h2{font-family:'Playfair Display',serif;color:white;font-size:1.15rem;}
+.pesan-steps{display:flex;padding:16px 24px;gap:0;background:var(--cream);border-bottom:1px solid var(--blush);}
+.step-indicator{flex:1;text-align:center;position:relative;}
+.step-indicator::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--blush);z-index:0;}
+.step-indicator:last-child::after{display:none;}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--blush);background:var(--white);color:var(--text-soft);font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;position:relative;z-index:1;transition:all .2s;}
+.step-dot.active{background:var(--plum);border-color:var(--plum);color:white;}
+.step-dot.done{background:var(--mauve);border-color:var(--mauve);color:white;}
+.step-label{font-size:.65rem;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.04em;}
+.step-label.active{color:var(--plum);}
+.pesan-body{padding:24px;overflow-y:auto;flex:1;}
+.pesan-footer{padding:16px 24px;border-top:1px solid var(--blush);display:flex;gap:10px;justify-content:flex-end;background:var(--ivory);}
+
+/* Step content */
+.step-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--plum);margin-bottom:6px;}
+.step-sub{font-size:.82rem;color:var(--text-soft);margin-bottom:20px;line-height:1.5;}
+.order-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;}
+.order-type-card{border:2px solid var(--blush);border-radius:var(--radius);padding:20px 16px;text-align:center;cursor:pointer;transition:all .18s;}
+.order-type-card:hover{border-color:var(--mauve);}
+.order-type-card.selected{border-color:var(--plum);background:var(--blush-light);}
+.order-type-card .otc-icon{font-size:2.2rem;margin-bottom:8px;}
+.order-type-card .otc-name{font-weight:700;color:var(--plum);font-size:.92rem;}
+.order-type-card .otc-desc{font-size:.75rem;color:var(--text-soft);margin-top:4px;line-height:1.4;}
+
+/* Product picker */
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:16px;}
+.picker-card{border:2px solid var(--blush);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .18s;position:relative;}
+.picker-card:hover{border-color:var(--mauve);}
+.picker-card.selected{border-color:var(--plum);}
+.picker-card-img{width:100%;aspect-ratio:1;background:var(--blush-light);display:flex;align-items:center;justify-content:center;font-size:2rem;}
+.picker-card-body{padding:8px 10px;}
+.picker-card-name{font-size:.78rem;font-weight:600;color:var(--plum);margin-bottom:2px;}
+.picker-card-price{font-size:.72rem;color:var(--text-soft);}
+.picker-check{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--plum);color:white;font-size:.7rem;display:none;align-items:center;justify-content:center;font-weight:700;}
+.picker-card.selected .picker-check{display:flex;}
+
+/* Size picker */
+.size-pick-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.size-pick-btn{padding:10px 20px;border:2px solid var(--blush);border-radius:var(--radius-sm);font-weight:700;color:var(--text-soft);cursor:pointer;transition:all .18s;background:white;}
+.size-pick-btn:hover{border-color:var(--mauve);color:var(--mauve);}
+.size-pick-btn.selected{background:var(--plum);border-color:var(--plum);color:white;}
+.size-pick-price{font-size:.78rem;font-weight:400;margin-top:2px;}
+
+/* Summary */
+.order-summary{background:var(--cream);border-radius:var(--radius-sm);padding:18px;margin-bottom:16px;}
+.summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;border-bottom:1px solid var(--blush);}
+.summary-row:last-child{border:none;}
+.summary-row .label{color:var(--text-soft);}
+.summary-row .value{font-weight:600;color:var(--plum);}
+.ucapan-area{width:100%;padding:12px;border:1.5px solid var(--blush);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.88rem;resize:vertical;min-height:90px;color:var(--text);background:var(--ivory);outline:none;transition:border-color .18s;margin-bottom:16px;}
+.ucapan-area:focus{border-color:var(--mauve);}
+.ucapan-label{font-size:.78rem;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:block;}
+.nama-input{width:100%;padding:10px 14px;border:1.5px solid var(--blush);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.88rem;color:var(--text);background:var(--ivory);outline:none;transition:border-color .18s;margin-bottom:14px;}
+.nama-input:focus{border-color:var(--mauve);}
+
+/* WA confirm */
+.wa-confirm{text-align:center;padding:16px 0;}
+.wa-confirm .wa-icon{font-size:3rem;margin-bottom:12px;}
+.wa-confirm h3{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--plum);margin-bottom:8px;}
+.wa-confirm p{font-size:.85rem;color:var(--text-soft);line-height:1.6;max-width:380px;margin:0 auto;}
+.btn-wa{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:white;border:none;padding:13px 28px;border-radius:30px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:20px;text-decoration:none;transition:background .2s,transform .15s;}
+.btn-wa:hover{background:#1ebe5d;transform:translateY(-2px);}
+
+/* Btn styles */
+.btn-primary{background:var(--plum);color:white;border:none;padding:11px 24px;border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn-primary:hover{background:var(--plum-mid);}
+.btn-secondary{background:transparent;color:var(--text-soft);border:1.5px solid var(--blush);padding:11px 24px;border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s;}
+.btn-secondary:hover{border-color:var(--mauve);color:var(--mauve);}
+.btn-danger{background:#e53935;color:white;border:none;padding:7px 14px;border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;cursor:pointer;}
+.btn-sm{padding:6px 12px;font-size:.78rem;}
+
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;z-index:400;background:rgba(74,32,48,.7);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;}
+.login-overlay.open{display:flex;}
+.login-box{background:var(--white);border-radius:var(--radius);padding:40px 36px;max-width:360px;width:100%;box-shadow:0 32px 80px rgba(74,32,48,.3);animation:modalIn .25s ease;text-align:center;}
+.login-box .lock{font-size:2.4rem;margin-bottom:8px;}
+.login-box h3{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--plum);margin-bottom:6px;}
+.login-box p{font-size:.82rem;color:var(--text-soft);margin-bottom:24px;}
+.login-input-wrap{position:relative;margin-bottom:16px;}
+.login-input-wrap input{width:100%;padding:12px 44px 12px 16px;border:1.5px solid var(--blush);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.9rem;color:var(--text);background:var(--ivory);outline:none;transition:border-color .18s;}
+.login-input-wrap input:focus{border-color:var(--mauve);}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--text-soft);}
+.login-err{font-size:.78rem;color:#e53935;margin-bottom:12px;min-height:18px;}
+.btn-login{width:100%;padding:12px;background:var(--plum);color:white;border:none;border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;}
+.btn-login:hover{background:var(--plum-mid);}
+
+/* ADMIN */
+.admin-overlay{position:fixed;inset:0;z-index:300;background:rgba(74,32,48,.65);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px;}
+.admin-overlay.open{display:flex;}
+.admin-panel{background:var(--white);border-radius:var(--radius);width:100%;max-width:920px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 100px rgba(74,32,48,.3);animation:modalIn .25s ease;}
+.admin-header{background:var(--plum);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;}
+.admin-header h2{font-family:'Playfair Display',serif;color:var(--white);font-size:1.2rem;}
+.admin-header .close-btn{background:rgba(255,255,255,.15);border:none;border-radius:50%;width:36px;height:36px;color:white;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.admin-tabs{display:flex;border-bottom:1px solid var(--blush);padding:0 16px;background:var(--cream);overflow-x:auto;}
+.admin-tab{padding:13px 14px;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-soft);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;white-space:nowrap;}
+.admin-tab.active{color:var(--plum);border-bottom-color:var(--plum);}
+.admin-content{padding:24px;overflow-y:auto;flex:1;}
+
+/* FORMS */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+label{font-size:.78rem;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;}
+input[type=text],input[type=number],input[type=url],input[type=password],input[type=tel],input[type=color],textarea,select{padding:10px 14px;border:1.5px solid var(--blush);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.88rem;color:var(--text);background:var(--ivory);outline:none;transition:border-color .18s;width:100%;}
+input[type=color]{padding:4px 6px;height:40px;cursor:pointer;}
+input:focus,textarea:focus,select:focus{border-color:var(--mauve);}
+textarea{resize:vertical;min-height:80px;}
+.size-price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.size-price-item{display:flex;flex-direction:column;gap:4px;}
+.size-price-item label{font-size:.72rem;}
+.size-price-item input{font-size:.82rem;}
+.color-picker-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.color-swatch-pick{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0;}
+.color-swatch-pick.selected{border-color:var(--plum);transform:scale(1.2);}
+.form-actions{display:flex;gap:12px;margin-top:20px;}
+
+.admin-product-list{display:flex;flex-direction:column;gap:12px;}
+.admin-product-item{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--radius-sm);border:1.5px solid var(--blush);transition:border-color .15s;}
+.admin-product-item:hover{border-color:var(--mauve);}
+.admin-thumb{width:52px;height:52px;border-radius:var(--radius-sm);background:var(--blush-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem;overflow:hidden;}
+.admin-thumb img{width:100%;height:100%;object-fit:cover;}
+.admin-item-info{flex:1;}
+.admin-item-name{font-weight:600;font-size:.9rem;color:var(--plum);}
+.admin-item-meta{font-size:.75rem;color:var(--text-soft);margin-top:2px;}
+.admin-item-actions{display:flex;gap:8px;}
+.btn-edit{background:var(--cream);color:var(--plum);border:none;padding:7px 14px;border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;cursor:pointer;}
+
+/* PALET */
+.palette-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.palette-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--blush);}
+.palette-swatch{width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid rgba(0,0,0,.08);}
+.palette-name{flex:1;font-weight:600;font-size:.88rem;color:var(--plum);}
+.palette-hex{font-size:.75rem;color:var(--text-soft);font-family:monospace;}
+.palette-actions{display:flex;gap:6px;}
+.add-palette-form{background:var(--cream);border-radius:var(--radius-sm);padding:16px;}
+.add-palette-form h4{font-size:.82rem;font-weight:700;color:var(--plum);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.palette-form-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;}
+
+/* SOCIAL ADMIN */
+.social-admin-list{display:flex;flex-direction:column;gap:14px;}
+.social-admin-item{display:flex;align-items:center;gap:14px;padding:16px;border-radius:var(--radius-sm);border:1.5px solid var(--blush);}
+.social-icon-prev{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.social-icon-prev svg{width:22px;height:22px;}
+.social-admin-info{flex:1;}
+.social-admin-info label{display:block;font-size:.72rem;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.social-admin-info input{width:100%;padding:8px 12px;border:1.5px solid var(--blush);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);background:var(--ivory);outline:none;}
+.social-admin-info input:focus{border-color:var(--mauve);}
+.wa-number-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--blush);}
+.wa-number-section h4{font-family:'Playfair Display',serif;font-size:1rem;color:var(--plum);margin-bottom:6px;}
+.wa-number-section p{font-size:.8rem;color:var(--text-soft);margin-bottom:14px;}
+
+/* TYPE MANAGER */
+.type-manager{display:flex;flex-direction:column;gap:12px;}
+.type-list{display:flex;flex-wrap:wrap;gap:8px;}
+.type-item{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;background:var(--blush-light);border:1.5px solid var(--blush);font-size:.82rem;font-weight:500;color:var(--plum);}
+.type-item .rm{background:none;border:none;color:var(--mauve);cursor:pointer;font-size:1rem;line-height:1;}
+.add-type-row{display:flex;gap:10px;}
+.add-type-row input{flex:1;}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--plum);color:white;padding:12px 28px;border-radius:30px;font-size:.85rem;font-weight:500;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;}
+.toast.show{opacity:1;}
+
+/* FOOTER */
+footer{position:relative;z-index:1;background:var(--plum);color:rgba(255,255,255,.7);text-align:center;padding:32px;font-size:.8rem;letter-spacing:.04em;}
+footer strong{color:white;font-family:'Playfair Display',serif;font-size:1rem;}
+
+@media(max-width:768px){
+  .catalog-wrapper{grid-template-columns:1fr;}
+  .sidebar{position:static;}
+  nav{padding:0 16px;}
+  .nav-links a{display:none;}
+  .hero{padding:50px 20px 40px;}
+  .form-row{grid-template-columns:1fr;}
+  .palette-form-row{grid-template-columns:1fr;}
+  .order-type-grid{grid-template-columns:1fr;}
+  .hero-cta{flex-direction:column;align-items:center;}
+}
+</style>
+</head>
+<body>
+<div class="petals-container" id="petals"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand" id="navBrand">Dear <span>Rona</span></div>
+  <div class="nav-links">
+    <a href="#catalog">Katalog</a>
+    <button class="btn-pesan" onclick="openPesan()">🌸 Pesan</button>
+    <button class="btn-admin" onclick="openAdminGate()">⚙ Admin</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow" id="heroEyebrow">Handmade with Love</div>
+  <h1 id="heroTitle">Buket Bunga & <em>Kreasi</em> Penuh Rasa</h1>
+  <p id="heroDesc">Rangkaian bunga segar, buket buah artistik, dan hadiah spesial untuk momen tak terlupakan Anda.</p>
+  <div class="hero-meta">
+    <div><strong id="heroStat1">50+</strong>Varian Produk</div>
+    <div><strong id="heroStat2">100%</strong>Handmade</div>
+    <div><strong id="heroStat3">Hari Ini</strong>Ready Order</div>
+  </div>
+  <div class="hero-cta">
+    <button class="btn-hero-pesan" onclick="openPesan()">🌸 Pesan Sekarang</button>
+    <button class="btn-hero-custom" onclick="openPesanCustom()">✏️ Custom Order</button>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<div class="catalog-wrapper" id="catalog">
+  <aside class="sidebar">
+    <div class="filter-section"><h3>Warna</h3><div class="color-grid" id="colorFilterGrid"></div></div>
+    <div class="filter-section"><h3>Jenis</h3><div class="type-tags" id="typeFilterTags"></div></div>
+    <div class="filter-section"><h3>Ukuran</h3><div class="size-grid" id="sizeFilterGrid"></div></div>
+    <div class="filter-section">
+      <h3>Range Harga</h3>
+      <div class="price-range-display"><span>Rp <span id="priceMin">0</span></span><span>Rp <span id="priceMax">1.000.000</span></span></div>
+      <input type="range" id="priceSlider" min="0" max="1000000" step="10000" value="1000000">
+    </div>
+    <button class="btn-reset" onclick="resetFilters()">↺ Reset Filter</button>
+  </aside>
+  <div>
+    <div class="products-header">
+      <div class="products-count">Menampilkan <strong id="productCount">0</strong> produk</div>
+      <select class="sort-select" id="sortSelect" onchange="renderProducts()">
+        <option value="default">Urutan Default</option>
+        <option value="price-asc">Harga: Terendah</option>
+        <option value="price-desc">Harga: Tertinggi</option>
+        <option value="name">Nama A–Z</option>
+      </select>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- SOCIAL FLOATING DOCK -->
+<div class="social-dock" id="socialDock">
+  <div class="social-row"><span class="social-label" id="slIG">Instagram</span>
+    <a class="social-btn ig" id="btnIG" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
+    </a></div>
+  <div class="social-row"><span class="social-label" id="slTT">TikTok</span>
+    <a class="social-btn tt" id="btnTT" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.79 1.52V6.76a4.85 4.85 0 01-1.02-.07z"/></svg>
+    </a></div>
+  <div class="social-row"><span class="social-label" id="slSP">Shopee</span>
+    <a class="social-btn sp" id="btnSP" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.5 2 6 4.5 6 7H4.5A1.5 1.5 0 003 8.5l-1 11A1.5 1.5 0 003.5 21h17a1.5 1.5 0 001.5-1.5l-1-11A1.5 1.5 0 0019.5 7H18c0-2.5-2.5-5-6-5zm0 1.5c2.5 0 4.5 1.8 4.5 3.5H7.5c0-1.7 2-3.5 4.5-3.5zm-3 9.5a3 3 0 006 0"/></svg>
+    </a></div>
+</div>
+
+<!-- PESAN MODAL WIZARD -->
+<div class="pesan-overlay" id="pesanOverlay">
+  <div class="pesan-panel">
+    <div class="pesan-header">
+      <h2 id="pesanHeaderTitle">🌸 Form Pemesanan</h2>
+      <button style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:34px;height:34px;color:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="closePesan()">✕</button>
+    </div>
+    <div class="pesan-steps" id="pesanSteps"></div>
+    <div class="pesan-body" id="pesanBody"></div>
+    <div class="pesan-footer" id="pesanFooter"></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="lock">🔐</div>
+    <h3>Panel Admin</h3>
+    <p>Masukkan password untuk mengakses panel admin Dear Rona.</p>
+    <div class="login-input-wrap">
+      <input type="password" id="loginInput" placeholder="Password..." onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="toggle-pw" onclick="togglePw()" id="togglePwBtn">👁</button>
+    </div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn-login" onclick="doLogin()">Masuk</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <h2>⚙ Panel Admin – Dear Rona</h2>
+      <button class="close-btn" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="admin-tabs">
+      <div class="admin-tab active" onclick="switchTab('products')">Produk</div>
+      <div class="admin-tab" onclick="switchTab('addProduct')">+ Tambah</div>
+      <div class="admin-tab" onclick="switchTab('colors')">🎨 Palet</div>
+      <div class="admin-tab" onclick="switchTab('types')">Jenis</div>
+      <div class="admin-tab" onclick="switchTab('social')">📲 Sosmed & WA</div>
+      <div class="admin-tab" onclick="switchTab('profile')">Profil</div>
+    </div>
+    <div class="admin-content" id="adminContent"></div>
+  </div>
+</div>
+
+<footer>
+  <div><strong id="footerBrand">Dear Rona</strong></div>
+  <div style="margin-top:8px" id="footerTagline">Handmade with love, delivered with care.</div>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJosXe0V3AL-9_a5NXJ5OXk7D7hNZV9Fk",
+    authDomain: "dear-rona.firebaseapp.com",
+    projectId: "dear-rona",
+    storageBucket: "dear-rona.firebasestorage.app",
+    messagingSenderId: "553507000632",
+    appId: "1:553507000632:web:46b4a57899a49215e031cd"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Expose ke script utama (classic script) lewat window, karena script utama
+  // masih pakai onclick="..." global yang butuh fungsi-fungsi non-module.
+  window.fb = { auth, db, signInWithEmailAndPassword, doc, getDoc, setDoc };
+
+  (async () => {
+    try {
+      const snap = await getDoc(doc(db, 'catalog', 'main'));
+      window.onRemoteStateLoaded(snap.exists() ? snap.data() : null);
+    } catch (err) {
+      console.error('Gagal memuat data dari Firestore:', err);
+    }
+  })();
+</script>
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const SIZES = ['S','M','L','XL'];
+const ADMIN_EMAIL = 'admin@dearrona.app'; // GANTI sesuai akun yang kamu buat di Firebase Console > Authentication > Users
+
+function defaultState(){
+  return {
+    profile:{brand:'Dear Rona',tagline:'Handmade with Love',heroTitle:'Buket Bunga & Kreasi Penuh Rasa',heroDesc:'Rangkaian bunga segar, buket buah artistik, dan hadiah spesial untuk momen tak terlupakan Anda.',heroStat1:'50+',heroStat2:'100%',heroStat3:'Hari Ini',footerTagline:'Handmade with love, delivered with care.'},
+    social:{ig:'',tt:'',sp:'',wa:''},
+    types:['Bunga','Buah','Uang','Snack','Boneka'],
+    colors:[
+      {id:'semua',name:'Semua',hex:''},
+      {id:'pink',name:'Merah Muda',hex:'#F2C4CE'},
+      {id:'red',name:'Merah',hex:'#E05C6B'},
+      {id:'white',name:'Putih',hex:'#F5F0EB'},
+      {id:'purple',name:'Ungu',hex:'#C4879A'},
+      {id:'yellow',name:'Kuning',hex:'#F7DC6F'},
+      {id:'orange',name:'Oranye',hex:'#F0956B'},
+      {id:'blue',name:'Biru',hex:'#B0D0F0'},
+      {id:'green',name:'Hijau',hex:'#8FA68E'},
+      {id:'brown',name:'Coklat',hex:'#C4956A'},
+    ],
+    products:[
+      {id:1,name:'Buket Mawar Romantis',type:'Bunga',color:'red',desc:'Buket mawar merah segar dengan pita satin eksklusif, cocok untuk hadiah ulang tahun atau anniversary.',emoji:'🌹',imageUrl:'',prices:{S:75000,M:120000,L:180000,XL:250000}},
+      {id:2,name:'Buket Tulip Pastel',type:'Bunga',color:'pink',desc:'Kombinasi tulip pastel yang lembut dan elegan, dikemas dalam kertas craft premium.',emoji:'🌷',imageUrl:'',prices:{S:90000,M:145000,L:210000,XL:300000}},
+      {id:3,name:'Buket Buah Tropis',type:'Buah',color:'orange',desc:'Kreasi buah segar tropis yang dirangkai cantik: melon, stroberi, anggur, dan nanas.',emoji:'🍇',imageUrl:'',prices:{S:100000,M:165000,L:230000,XL:320000}},
+      {id:4,name:'Money Bouquet Premium',type:'Uang',color:'green',desc:'Buket uang kertas yang dirangkai artistik dengan bunga kertas, hadiah wisuda atau pernikahan.',emoji:'💐',imageUrl:'',prices:{S:150000,M:250000,L:400000,XL:600000}},
+      {id:5,name:'Buket Matahari Cerah',type:'Bunga',color:'yellow',desc:'Buket bunga matahari segar yang ceria, cocok untuk menyemangati orang tersayang.',emoji:'🌻',imageUrl:'',prices:{S:80000,M:130000,L:190000,XL:270000}},
+      {id:6,name:'Buket Snack Coklat',type:'Snack',color:'brown',desc:'Kreasi snack coklat premium yang dirangkai menjadi buket yang manis dan lezat.',emoji:'🍫',imageUrl:'',prices:{S:95000,M:155000,L:220000,XL:310000}},
+    ]
+  };
+}
+
+let state = (()=>{ try{const s=localStorage.getItem('dearRona3'); if(s){ const p=JSON.parse(s); if(!p.social) p.social={ig:'',tt:'',sp:'',wa:''}; return p;}} catch(e){} return defaultState(); })();
+
+function saveState(){
+  localStorage.setItem('dearRona3',JSON.stringify(state)); // cache lokal, biar tetap ada fallback kalau offline
+  if(window.fb){
+    window.fb.setDoc(window.fb.doc(window.fb.db,'catalog','main'), state)
+      .catch(err=>{ console.error('Gagal simpan ke Firestore:',err); showToast('⚠️ Gagal simpan ke server: '+err.message); });
+  } else {
+    showToast('⚠️ Belum terhubung ke server, perubahan baru tersimpan lokal.');
+  }
+}
+
+// Dipanggil oleh script Firebase (type=module) setelah data dari Firestore datang.
+window.onRemoteStateLoaded = function(remote){
+  if(remote){
+    if(!remote.social) remote.social={ig:'',tt:'',sp:'',wa:''};
+    state=remote;
+    localStorage.setItem('dearRona3',JSON.stringify(state));
+  }
+  renderHero(); renderSocialDock(); renderColorFilter(); renderTypeFilter(); renderSizeFilter(); renderProducts();
+};
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+let filters={color:'semua',type:'Semua',size:null,maxPrice:1000000};
+let currentTab='products';
+
+function colorById(id){ return state.colors.find(c=>c.id===id)||{hex:'#ccc',name:'?'}; }
+function colorHex(id){ return colorById(id).hex||'#ccc'; }
+function formatRp(n){ return 'Rp '+Number(n).toLocaleString('id-ID'); }
+function formatNum(n){ return n>=1000000?(n/1000000).toFixed(n%1000000===0?0:1)+' jt':n.toLocaleString('id-ID'); }
+function getMinPrice(p){ return Math.min(...SIZES.map(s=>p.prices[s]||Infinity)); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function closePesan(){ document.getElementById('pesanOverlay').classList.remove('open'); pesanState={}; }
+
+// ═══════════════════════════════════════════════
+// PETALS
+// ═══════════════════════════════════════════════
+function createPetals(){
+  const c=document.getElementById('petals');
+  const hues=['#F2C4CE','#FAE8ED','#C4879A','#F7DC6F','#D4E5D3'];
+  for(let i=0;i<12;i++){
+    const p=document.createElement('div'); p.className='petal';
+    p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*10}s;animation-delay:${Math.random()*12}s;opacity:${.2+Math.random()*.3};width:${10+Math.random()*14}px;background:${hues[Math.floor(Math.random()*hues.length)]}`;
+    c.appendChild(p);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// HERO
+// ═══════════════════════════════════════════════
+function renderHero(){
+  const p=state.profile;
+  document.getElementById('heroEyebrow').textContent=p.tagline;
+  document.getElementById('heroTitle').textContent=p.heroTitle;
+  document.getElementById('heroDesc').textContent=p.heroDesc;
+  document.getElementById('heroStat1').textContent=p.heroStat1;
+  document.getElementById('heroStat2').textContent=p.heroStat2;
+  document.getElementById('heroStat3').textContent=p.heroStat3;
+  const words=p.brand.split(' ');
+  document.getElementById('navBrand').innerHTML=words.slice(0,-1).join(' ')+' <span>'+words[words.length-1]+'</span>';
+  document.getElementById('footerBrand').textContent=p.brand;
+  document.getElementById('footerTagline').textContent=p.footerTagline;
+}
+
+// ═══════════════════════════════════════════════
+// SOCIAL DOCK
+// ═══════════════════════════════════════════════
+function renderSocialDock(){
+  const s=state.social;
+  const setLink=(id,url,fallback)=>{
+    const el=document.getElementById(id);
+    el.href=url||fallback||'#';
+    el.style.opacity=url?'1':'.4';
+    el.style.pointerEvents=url?'auto':'none';
+    el.title=url?'Buka '+id:'Belum diatur';
+  };
+  setLink('btnIG',s.ig);
+  setLink('btnTT',s.tt);
+  setLink('btnSP',s.sp);
+}
+
+// ═══════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════
+function renderColorFilter(){
+  document.getElementById('colorFilterGrid').innerHTML=state.colors.map(c=>`
+    <div class="color-dot${c.id==='semua'?' color-dot-all':''}${filters.color===c.id?' active':''}"
+      title="${c.name}" style="${c.id!=='semua'?'background:'+c.hex:''}"
+      onclick="setColorFilter('${c.id}')"></div>`).join('');
+}
+function renderTypeFilter(){
+  document.getElementById('typeFilterTags').innerHTML=['Semua',...state.types].map(t=>
+    `<div class="tag${filters.type===t?' active':''}" onclick="setTypeFilter('${t}')">${t}</div>`).join('');
+}
+function renderSizeFilter(){
+  document.getElementById('sizeFilterGrid').innerHTML=SIZES.map(s=>
+    `<button class="size-btn${filters.size===s?' active':''}" onclick="setSizeFilter('${s}')">${s}</button>`).join('');
+}
+function setColorFilter(c){filters.color=c;renderColorFilter();renderProducts();}
+function setTypeFilter(t){filters.type=t;renderTypeFilter();renderProducts();}
+function setSizeFilter(s){filters.size=filters.size===s?null:s;renderSizeFilter();renderProducts();}
+function resetFilters(){
+  filters={color:'semua',type:'Semua',size:null,maxPrice:1000000};
+  document.getElementById('priceSlider').value=1000000;
+  document.getElementById('priceMax').textContent=formatNum(1000000);
+  renderColorFilter();renderTypeFilter();renderSizeFilter();renderProducts();
+}
+document.getElementById('priceSlider').addEventListener('input',function(){
+  filters.maxPrice=+this.value;
+  document.getElementById('priceMax').textContent=formatNum(+this.value);
+  renderProducts();
+});
+
+// ═══════════════════════════════════════════════
+// PRODUCTS
+// ═══════════════════════════════════════════════
+function renderProducts(){
+  let list=[...state.products];
+  if(filters.color!=='semua') list=list.filter(p=>p.color===filters.color);
+  if(filters.type!=='Semua') list=list.filter(p=>p.type===filters.type);
+  if(filters.size) list=list.filter(p=>p.prices[filters.size]>0);
+  list=list.filter(p=>getMinPrice(p)<=filters.maxPrice);
+  const sort=document.getElementById('sortSelect').value;
+  if(sort==='price-asc') list.sort((a,b)=>getMinPrice(a)-getMinPrice(b));
+  else if(sort==='price-desc') list.sort((a,b)=>getMinPrice(b)-getMinPrice(a));
+  else if(sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('productCount').textContent=list.length;
+  if(!list.length){ document.getElementById('productGrid').innerHTML='<div class="no-results"><div class="emoji">🌸</div><p>Tidak ada produk yang sesuai filter.</p></div>'; return; }
+  document.getElementById('productGrid').innerHTML=list.map(p=>{
+    const minP=getMinPrice(p);
+    const img=p.imageUrl?`<img src="${p.imageUrl}" class="card-image" alt="${escHtml(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="card-image-placeholder" style="display:none">${p.emoji||'🌸'}</div>`:`<div class="card-image-placeholder">${p.emoji||'🌸'}</div>`;
+    return `<div class="product-card" onclick="openProductModal(${p.id})">
+      <div style="position:relative">${img}
+        <div class="card-badge">${p.type}</div>
+        <div class="card-color-dot" style="background:${colorHex(p.color)}"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-type">${p.type}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-desc">${p.desc}</div>
+        <div class="card-footer">
+          <div class="card-price">Mulai ${formatRp(minP)}</div>
+          <div class="card-size">S – XL</div>
+        </div>
+      </div>
+      <button class="card-order-btn" onclick="event.stopPropagation();openPesanFromProduct(${p.id})">🌸 Pesan Ini</button>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// PRODUCT DETAIL MODAL
+// ═══════════════════════════════════════════════
+function openProductModal(id){
+  const p=state.products.find(x=>x.id===id); if(!p) return;
+  const hex=colorHex(p.color);
+  const img=p.imageUrl?`<img src="${p.imageUrl}" class="modal-image" alt="${escHtml(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="modal-image-placeholder" style="display:none">${p.emoji||'🌸'}</div>`:`<div class="modal-image-placeholder">${p.emoji||'🌸'}</div>`;
+  document.getElementById('modalContent').innerHTML=`${img}
+    <div class="modal-body">
+      <div class="modal-meta"><span class="modal-badge">${p.type}</span>
+        <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${hex};border:1px solid #eee"></span></div>
+      <div class="modal-name">${p.name}</div>
+      <div class="modal-desc">${p.desc}</div>
+      <div class="modal-sizes"><h4>Pilihan Ukuran & Harga</h4>
+        <div class="modal-size-grid">${SIZES.map(s=>`<div class="modal-size-item"><div class="sz">${s}</div><div class="pr">${p.prices[s]?formatRp(p.prices[s]):'–'}</div></div>`).join('')}</div>
+      </div>
+      <button class="btn-pesan-produk" onclick="closeModal();openPesanFromProduct(${p.id})">🌸 Pesan Produk Ini</button>
+    </div>`;
+  document.getElementById('productModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('productModal').classList.remove('open'); }
+document.getElementById('productModal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeModal(); });
+
+// ═══════════════════════════════════════════════
+// PESAN WIZARD
+// ═══════════════════════════════════════════════
+let pesanState = {};
+// Steps: 0=pilih tipe, 1=pilih produk (if standard), 2=pilih ukuran, 3=detail+ucapan, 4=konfirmasi
+// Custom: 0=pilih tipe, 1=isi custom, 2=konfirmasi
+
+function openPesan(){
+  pesanState={type:null,productId:null,size:null,ucapan:'',nama:''};
+  document.getElementById('pesanOverlay').classList.add('open');
+  renderPesanStep(0);
+}
+function openPesanCustom(){
+  pesanState={type:'custom',productId:null,size:null,ucapan:'',nama:''};
+  document.getElementById('pesanOverlay').classList.add('open');
+  renderPesanStep('custom-detail');
+}
+function openPesanFromProduct(id){
+  const p=state.products.find(x=>x.id===id);
+  pesanState={type:'standard',productId:id,size:null,ucapan:'',nama:'',_product:p};
+  document.getElementById('pesanOverlay').classList.add('open');
+  renderPesanStep(2);
+}
+
+const STEP_LABELS_STD=['Tipe','Produk','Ukuran','Detail','Konfirmasi'];
+const STEP_LABELS_CUST=['Tipe','Detail','Konfirmasi'];
+
+function renderStepIndicator(currentStep, labels){
+  return labels.map((l,i)=>`
+    <div class="step-indicator">
+      <div class="step-dot${i===currentStep?' active':i<currentStep?' done':''}">${i<currentStep?'✓':i+1}</div>
+      <div class="step-label${i===currentStep?' active':''}">${l}</div>
+    </div>`).join('');
+}
+
+function renderPesanStep(step){
+  const body=document.getElementById('pesanBody');
+  const footer=document.getElementById('pesanFooter');
+  const stepsEl=document.getElementById('pesanSteps');
+
+  // STEP 0: Pilih tipe order
+  if(step===0){
+    stepsEl.innerHTML=renderStepIndicator(0,STEP_LABELS_STD);
+    body.innerHTML=`
+      <div class="step-title">Mau pesan seperti apa? 🌸</div>
+      <div class="step-sub">Pilih produk dari katalog kami, atau custom sesuai keinginan kamu.</div>
+      <div class="order-type-grid">
+        <div class="order-type-card${pesanState.type==='standard'?' selected':''}" onclick="pesanState.type='standard';renderPesanStep(0)">
+          <div class="otc-icon">🛍️</div>
+          <div class="otc-name">Pilih dari Katalog</div>
+          <div class="otc-desc">Pilih produk yang sudah tersedia beserta warna, ukuran & harga.</div>
+        </div>
+        <div class="order-type-card${pesanState.type==='custom'?' selected':''}" onclick="pesanState.type='custom';renderPesanStep(0)">
+          <div class="otc-icon">✏️</div>
+          <div class="otc-name">Custom Order</div>
+          <div class="otc-desc">Ceritakan keinginan spesial kamu, kami bantu wujudkan.</div>
+        </div>
+      </div>`;
+    footer.innerHTML=`
+      <button class="btn-secondary" onclick="closePesan()">Batal</button>
+      <button class="btn-primary" onclick="if(pesanState.type==='standard')renderPesanStep(1);else if(pesanState.type==='custom')renderPesanStep('custom-detail');else showToast('Pilih tipe pesanan dulu!')" style="min-width:100px">Lanjut →</button>`;
+    return;
+  }
+
+  // STEP 1: Pilih produk dari katalog
+  if(step===1){
+    stepsEl.innerHTML=renderStepIndicator(1,STEP_LABELS_STD);
+    const products=state.products;
+    body.innerHTML=`
+      <div class="step-title">Pilih Produk 🌷</div>
+      <div class="step-sub">Ketuk produk yang ingin kamu pesan.</div>
+      <div class="picker-grid">
+        ${products.map(p=>{
+          const sel=pesanState.productId===p.id;
+          const img=p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;aspect-ratio:1;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div style="display:none;width:100%;aspect-ratio:1;background:var(--blush-light);align-items:center;justify-content:center;font-size:2rem">${p.emoji||'🌸'}</div>`:`<div style="width:100%;aspect-ratio:1;background:var(--blush-light);display:flex;align-items:center;justify-content:center;font-size:2rem">${p.emoji||'🌸'}</div>`;
+          return `<div class="picker-card${sel?' selected':''}" onclick="pesanState.productId=${p.id};pesanState._product=state.products.find(x=>x.id===${p.id});renderPesanStep(1)">
+            <div class="picker-card-img">${img}</div>
+            <div class="picker-check">✓</div>
+            <div class="picker-card-body">
+              <div class="picker-card-name">${p.name}</div>
+              <div class="picker-card-price">Mulai ${formatRp(getMinPrice(p))}</div>
+            </div></div>`;
+        }).join('')}
+      </div>`;
+    footer.innerHTML=`
+      <button class="btn-secondary" onclick="renderPesanStep(0)">← Kembali</button>
+      <button class="btn-primary" onclick="if(pesanState.productId)renderPesanStep(2);else showToast('Pilih produk dulu!')" style="min-width:100px">Lanjut →</button>`;
+    return;
+  }
+
+  // STEP 2: Pilih ukuran
+  if(step===2){
+    const labels=pesanState.type==='custom'?STEP_LABELS_CUST:STEP_LABELS_STD;
+    const idx=pesanState.type==='custom'?1:2;
+    stepsEl.innerHTML=renderStepIndicator(idx,labels);
+    const p=pesanState._product;
+    body.innerHTML=`
+      <div class="step-title">Pilih Ukuran 📦</div>
+      <div class="step-sub">Pilih ukuran untuk <strong>${p?p.name:'produk'}</strong>.</div>
+      <div class="size-pick-grid">
+        ${SIZES.map(s=>{
+          const price=p&&p.prices[s];
+          if(!price) return '';
+          return `<div class="size-pick-btn${pesanState.size===s?' selected':''}" onclick="pesanState.size='${s}';renderPesanStep(2)">
+            <div>${s}</div><div class="size-pick-price">${formatRp(price)}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    footer.innerHTML=`
+      <button class="btn-secondary" onclick="renderPesanStep(pesanState.type==='custom'?'custom-detail':1)">← Kembali</button>
+      <button class="btn-primary" onclick="if(pesanState.size)renderPesanStep(3);else showToast('Pilih ukuran dulu!')" style="min-width:100px">Lanjut →</button>`;
+    return;
+  }
+
+  // STEP custom-detail: isi detail custom
+  if(step==='custom-detail'){
+    stepsEl.innerHTML=renderStepIndicator(1,STEP_LABELS_CUST);
+    body.innerHTML=`
+      <div class="step-title">Detail Custom Order ✏️</div>
+      <div class="step-sub">Ceritakan keinginan kamu! Admin kami akan menghubungi untuk konfirmasi harga dan detail.</div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label>Nama Kamu</label>
+        <input type="text" id="customNama" class="nama-input" placeholder="Nama kamu..." value="${escHtml(pesanState.nama||'')}">
+      </div>
+      <label class="ucapan-label">Deskripsi Pesanan</label>
+      <textarea class="ucapan-area" id="customDesc" placeholder="Contoh: Buket bunga mawar merah ukuran besar untuk anniversary, dengan pita gold, dan kartu ucapan 'Happy Anniversary My Love'...">${escHtml(pesanState.customDesc||'')}</textarea>
+      <div class="form-group">
+        <label>Nomor WA Kamu (opsional)</label>
+        <input type="tel" id="customWA" class="nama-input" placeholder="08xx..." value="${escHtml(pesanState.customWA||'')}">
+      </div>`;
+    footer.innerHTML=`
+      <button class="btn-secondary" onclick="renderPesanStep(0)">← Kembali</button>
+      <button class="btn-primary" onclick="
+        pesanState.nama=document.getElementById('customNama').value.trim();
+        pesanState.customDesc=document.getElementById('customDesc').value.trim();
+        pesanState.customWA=document.getElementById('customWA').value.trim();
+        if(!pesanState.customDesc){showToast('Ceritakan dulu pesanan kamu!');return;}
+        renderPesanStep('custom-confirm');" style="min-width:100px">Lanjut →</button>`;
+    return;
+  }
+
+  // STEP 3: Detail & ucapan (standard)
+  if(step===3){
+    stepsEl.innerHTML=renderStepIndicator(3,STEP_LABELS_STD);
+    const p=pesanState._product;
+    body.innerHTML=`
+      <div class="step-title">Detail Pesanan 💌</div>
+      <div class="step-sub">Tambahkan nama dan kartu ucapan untuk pesanan kamu.</div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label>Nama Pemesan</label>
+        <input type="text" id="orderNama" class="nama-input" placeholder="Nama kamu..." value="${escHtml(pesanState.nama||'')}">
+      </div>
+      <label class="ucapan-label">Kartu Ucapan (opsional)</label>
+      <textarea class="ucapan-area" id="orderUcapan" placeholder="Tulis pesan spesial yang akan disertakan dalam kartu ucapan...">${escHtml(pesanState.ucapan||'')}</textarea>`;
+    footer.innerHTML=`
+      <button class="btn-secondary" onclick="renderPesanStep(2)">← Kembali</button>
+      <button class="btn-primary" onclick="
+        pesanState.nama=document.getElementById('orderNama').value.trim();
+        pesanState.ucapan=document.getElementById('orderUcapan').value.trim();
+        renderPesanStep(4);" style="min-width:100px">Lanjut →</button>`;
+    return;
+  }
+
+  // STEP 4: Konfirmasi (standard)
+  if(step===4){
+    stepsEl.innerHTML=renderStepIndicator(4,STEP_LABELS_STD);
+    const p=pesanState._product;
+    const price=p&&pesanState.size?p.prices[pesanState.size]:0;
+    const colorName=p?colorById(p.color).name:'–';
+    body.innerHTML=`
+      <div class="step-title">Ringkasan Pesanan 🛍️</div>
+      <div class="step-sub">Cek kembali pesanan kamu sebelum menghubungi admin.</div>
+      <div class="order-summary">
+        <div class="summary-row"><span class="label">Produk</span><span class="value">${p?p.name:'–'}</span></div>
+        <div class="summary-row"><span class="label">Jenis</span><span class="value">${p?p.type:'–'}</span></div>
+        <div class="summary-row"><span class="label">Warna</span><span class="value">${colorName}</span></div>
+        <div class="summary-row"><span class="label">Ukuran</span><span class="value">${pesanState.size||'–'}</span></div>
+        <div class="summary-row"><span class="label">Harga</span><span class="value">${price?formatRp(price):'–'}</span></div>
+        ${pesanState.nama?`<div class="summary-row"><span class="label">Pemesan</span><span class="value">${escHtml(pesanState.nama)}</span></div>`:''}
+        ${pesanState.ucapan?`<div class="summary-row"><span class="label">Ucapan</span><span class="value" style="max-width:240px;text-align:right">"${escHtml(pesanState.ucapan)}"</span></div>`:''}
+      </div>
+      <div class="wa-confirm">
+        <div class="wa-icon">💬</div>
+        <h3>Lanjut via WhatsApp?</h3>
+        <p>Klik tombol di bawah untuk mengirim detail pesanan ke admin Dear Rona melalui WhatsApp.</p>
+        ${buildWaBtn()}
+      </div>`;
+    footer.innerHTML=`<button class="btn-secondary" onclick="renderPesanStep(3)">← Kembali</button>`;
+    return;
+  }
+
+  // STEP custom-confirm
+  if(step==='custom-confirm'){
+    stepsEl.innerHTML=renderStepIndicator(2,STEP_LABELS_CUST);
+    body.innerHTML=`
+      <div class="step-title">Ringkasan Custom Order ✨</div>
+      <div class="step-sub">Konfirmasi pesanan custom kamu.</div>
+      <div class="order-summary">
+        ${pesanState.nama?`<div class="summary-row"><span class="label">Nama</span><span class="value">${escHtml(pesanState.nama)}</span></div>`:''}
+        <div class="summary-row"><span class="label">Deskripsi Pesanan</span></div>
+        <div style="padding:10px 0;font-size:.85rem;color:var(--text);line-height:1.6">"${escHtml(pesanState.customDesc)}"</div>
+        ${pesanState.customWA?`<div class="summary-row"><span class="label">WA Kamu</span><span class="value">${escHtml(pesanState.customWA)}</span></div>`:''}
+      </div>
+      <div class="wa-confirm">
+        <div class="wa-icon">💬</div>
+        <h3>Kirim ke Admin via WhatsApp</h3>
+        <p>Admin akan menghubungi kamu untuk konfirmasi detail, harga, dan proses pemesanan.</p>
+        ${buildWaBtnCustom()}
+      </div>`;
+    footer.innerHTML=`<button class="btn-secondary" onclick="renderPesanStep('custom-detail')">← Kembali</button>`;
+    return;
+  }
+}
+
+function buildWaBtn(){
+  const waNum=(state.social.wa||'').replace(/\D/g,'');
+  if(!waNum) return `<p style="color:#e53935;font-size:.82rem;margin-top:16px">⚠️ Nomor WhatsApp admin belum diatur. Hubungi admin untuk mengatur nomor WA.</p>`;
+  const p=pesanState._product;
+  const price=p&&pesanState.size?p.prices[pesanState.size]:0;
+  const colorName=p?colorById(p.color).name:'';
+  let msg=`Halo Dear Rona! 🌸 Saya ingin memesan:\n\n`;
+  if(pesanState.nama) msg+=`👤 Nama: ${pesanState.nama}\n`;
+  if(p) msg+=`🌷 Produk: ${p.name}\n`;
+  msg+=`📦 Ukuran: ${pesanState.size||'-'}\n`;
+  if(colorName) msg+=`🎨 Warna: ${colorName}\n`;
+  if(price) msg+=`💰 Harga: ${formatRp(price)}\n`;
+  if(pesanState.ucapan) msg+=`💌 Kartu Ucapan: "${pesanState.ucapan}"\n`;
+  msg+=`\nMohon konfirmasinya, terima kasih! 🙏`;
+  const url=`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+  return `<a class="btn-wa" href="${url}" target="_blank">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    Pesan via WhatsApp
+  </a>`;
+}
+
+function buildWaBtnCustom(){
+  const waNum=(state.social.wa||'').replace(/\D/g,'');
+  if(!waNum) return `<p style="color:#e53935;font-size:.82rem;margin-top:16px">⚠️ Nomor WhatsApp admin belum diatur.</p>`;
+  let msg=`Halo Dear Rona! 🌸 Saya mau custom order:\n\n`;
+  if(pesanState.nama) msg+=`👤 Nama: ${pesanState.nama}\n`;
+  msg+=`📝 Detail Pesanan:\n${pesanState.customDesc}\n`;
+  if(pesanState.customWA) msg+=`📱 WA Saya: ${pesanState.customWA}\n`;
+  msg+=`\nMohon konfirmasinya, terima kasih! 🙏`;
+  const url=`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+  return `<a class="btn-wa" href="${url}" target="_blank">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    Kirim Custom Order via WA
+  </a>`;
+}
+
+document.getElementById('pesanOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closePesan(); });
+
+// ═══════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════
+function openAdminGate(){ document.getElementById('loginInput').value=''; document.getElementById('loginErr').textContent=''; document.getElementById('loginOverlay').classList.add('open'); setTimeout(()=>document.getElementById('loginInput').focus(),100); }
+async function doLogin(){
+  if(!window.fb){ document.getElementById('loginErr').textContent='Masih menyambung ke server, coba lagi sebentar.'; return; }
+  const v=document.getElementById('loginInput').value;
+  const btn=document.querySelector('.btn-login');
+  if(btn){ btn.disabled=true; btn.textContent='Memeriksa...'; }
+  try{
+    await window.fb.signInWithEmailAndPassword(window.fb.auth, ADMIN_EMAIL, v);
+    document.getElementById('loginOverlay').classList.remove('open');
+    document.getElementById('adminOverlay').classList.add('open');
+    switchTab('products');
+  } catch(err){
+    document.getElementById('loginErr').textContent='Password salah, coba lagi.';
+    document.getElementById('loginInput').value='';
+    document.getElementById('loginInput').focus();
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent='Masuk'; }
+  }
+}
+function togglePw(){ const i=document.getElementById('loginInput'),b=document.getElementById('togglePwBtn'); if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';} }
+document.getElementById('loginOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) document.getElementById('loginOverlay').classList.remove('open'); });
+
+// ═══════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════
+function closeAdmin(){ document.getElementById('adminOverlay').classList.remove('open'); }
+document.getElementById('adminOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeAdmin(); });
+
+function switchTab(tab){
+  currentTab=tab;
+  const tabs=['products','addProduct','colors','types','social','profile'];
+  document.querySelectorAll('.admin-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  const c=document.getElementById('adminContent');
+  if(tab==='products') c.innerHTML=renderAdminProductList();
+  else if(tab==='addProduct') c.innerHTML=renderProductForm(null);
+  else if(tab==='colors') c.innerHTML=renderColorManager();
+  else if(tab==='types') c.innerHTML=renderTypesManager();
+  else if(tab==='social') c.innerHTML=renderSocialForm();
+  else if(tab==='profile') c.innerHTML=renderProfileForm();
+}
+
+// ═══════════════════════════════════════════════
+// ADMIN: PRODUK
+// ═══════════════════════════════════════════════
+function renderAdminProductList(){
+  if(!state.products.length) return '<p style="color:var(--text-soft);text-align:center;padding:40px">Belum ada produk. Tambah produk baru di tab "+ Tambah".</p>';
+  return `<div class="admin-product-list">${state.products.map(p=>`
+    <div class="admin-product-item">
+      <div class="admin-thumb">${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:p.emoji||'🌸'}</div>
+      <div class="admin-item-info">
+        <div class="admin-item-name">${escHtml(p.name)}</div>
+        <div class="admin-item-meta">${p.type} · ${colorById(p.color).name} · Mulai ${formatRp(getMinPrice(p))}</div>
+      </div>
+      <div class="admin-item-actions">
+        <button class="btn-edit" onclick="editProduct(${p.id})">Edit</button>
+        <button class="btn-danger" onclick="deleteProduct(${p.id})">Hapus</button>
+      </div></div>`).join('')}</div>`;
+}
+
+function productColorSwatches(selectedId){
+  return state.colors.filter(c=>c.id!=='semua').map(c=>`
+    <div class="color-swatch-pick${c.id===selectedId?' selected':''}"
+      style="background:${c.hex}" title="${c.name}" data-cid="${c.id}"
+      onclick="selectProductColor(this,'${c.id}')"></div>`).join('');
+}
+
+function renderProductForm(id){
+  const p=id?state.products.find(x=>x.id===id):null;
+  const sel=p?p.color:'pink';
+  return `<div>
+    <div class="form-row">
+      <div class="form-group"><label>Nama Produk</label><input type="text" id="fName" value="${p?escHtml(p.name):''}" placeholder="Nama produk..."></div>
+      <div class="form-group"><label>Jenis</label><select id="fType">${state.types.map(t=>`<option value="${t}"${p&&p.type===t?' selected':''}>${t}</option>`).join('')}</select></div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label>Deskripsi Singkat</label><textarea id="fDesc" placeholder="Deskripsi produk...">${p?escHtml(p.desc):''}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>URL Foto (opsional)</label><input type="url" id="fImage" value="${p?escHtml(p.imageUrl||''):''}" placeholder="https://..."></div>
+      <div class="form-group"><label>Emoji (jika tanpa foto)</label><input type="text" id="fEmoji" value="${p?escHtml(p.emoji||'🌸'):'🌸'}" placeholder="🌸"></div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label>Warna Produk</label>
+      <div class="color-picker-row">${productColorSwatches(sel)}</div>
+      <input type="hidden" id="fColor" value="${sel}">
+    </div>
+    <div class="form-group" style="margin-bottom:8px"><label>Harga per Ukuran (Rp)</label></div>
+    <div class="size-price-grid">${SIZES.map(s=>`
+      <div class="size-price-item"><label>Ukuran ${s}</label>
+        <input type="number" id="fPrice${s}" value="${p&&p.prices[s]?p.prices[s]:''}" placeholder="0" min="0" step="1000"></div>`).join('')}</div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="saveProduct(${id||'null'})">${id?'Simpan Perubahan':'Tambah Produk'}</button>
+      ${id?`<button class="btn-secondary" onclick="switchTab('products')">Batal</button>`:''}
+    </div></div>`;
+}
+
+function selectProductColor(el,id){
+  document.querySelectorAll('.color-swatch-pick').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('fColor').value=id;
+}
+
+function editProduct(id){
+  document.querySelectorAll('.admin-tab').forEach((t,i)=>t.classList.toggle('active',i===1));
+  document.getElementById('adminContent').innerHTML=renderProductForm(id);
+}
+
+function deleteProduct(id){
+  if(!confirm('Hapus produk ini?')) return;
+  state.products=state.products.filter(p=>p.id!==id);
+  saveState(); renderProducts(); switchTab('products'); showToast('Produk dihapus!');
+}
+
+function saveProduct(id){
+  const name=document.getElementById('fName').value.trim();
+  const type=document.getElementById('fType').value;
+  const desc=document.getElementById('fDesc').value.trim();
+  const imageUrl=document.getElementById('fImage').value.trim();
+  const emoji=document.getElementById('fEmoji').value.trim();
+  const color=document.getElementById('fColor').value;
+  if(!name){alert('Nama produk wajib diisi!');return;}
+  const prices={};
+  SIZES.forEach(s=>{prices[s]=+document.getElementById('fPrice'+s).value||0;});
+  if(id){
+    const i=state.products.findIndex(p=>p.id===id);
+    state.products[i]={...state.products[i],name,type,desc,imageUrl,emoji,color,prices};
+    showToast('Produk diperbarui! ✓');
+  } else {
+    state.products.push({id:Date.now(),name,type,desc,imageUrl,emoji,color,prices});
+    showToast('Produk ditambahkan! ✓');
+  }
+  saveState(); renderProducts(); switchTab('products');
+}
+
+// ═══════════════════════════════════════════════
+// ADMIN: PALET WARNA
+// ═══════════════════════════════════════════════
+function renderColorManager(){
+  const editable=state.colors.filter(c=>c.id!=='semua');
+  return `
+  <p style="font-size:.85rem;color:var(--text-soft);margin-bottom:16px">
+    Kelola daftar warna yang bisa dipilih sebagai filter katalog dan tag warna produk.
+    Warna "Semua" selalu tersedia dan tidak bisa dihapus.
+  </p>
+  <div class="palette-list">
+    <div class="palette-item">
+      <div class="palette-swatch" style="background:linear-gradient(135deg,#F2C4CE,#C4879A,#8FA68E,#B0D0F0,#F7DC6F)"></div>
+      <div style="flex:1"><div class="palette-name">Semua</div><div class="palette-hex">– filter semua warna –</div></div>
+      <span style="font-size:.75rem;color:var(--text-soft);font-style:italic">bawaan</span>
+    </div>
+    ${editable.map(c=>`
+    <div class="palette-item" id="pitem-${c.id}">
+      <div class="palette-swatch" style="background:${c.hex}" id="psw-${c.id}"></div>
+      <div style="flex:1">
+        <div class="palette-name" id="pname-${c.id}">${escHtml(c.name)}</div>
+        <div class="palette-hex" id="phex-${c.id}">${c.hex}</div>
+      </div>
+      <div class="palette-actions">
+        <button class="btn-edit btn-sm" onclick="editColorRow('${c.id}')">Edit</button>
+        <button class="btn-danger btn-sm" onclick="deleteColor('${c.id}')">Hapus</button>
+      </div></div>`).join('')}
+  </div>
+  <div class="add-palette-form">
+    <h4>+ Tambah Warna Baru</h4>
+    <div class="palette-form-row">
+      <div class="form-group"><label>Nama Warna</label><input type="text" id="newColorName" placeholder="misal: Tosca"></div>
+      <div class="form-group"><label>Pilih Warna</label><input type="color" id="newColorHex" value="#A8D8C0"></div>
+      <button class="btn-primary" style="height:40px;align-self:end" onclick="addColor()">+ Tambah</button>
+    </div>
+  </div>`;
+}
+
+function editColorRow(id){
+  const c=colorById(id);
+  const item=document.getElementById('pitem-'+id);
+  item.innerHTML=`
+    <div class="palette-swatch" id="psw-edit-${id}" style="background:${c.hex}"></div>
+    <div style="flex:1;display:flex;gap:10px;align-items:center">
+      <input type="text" id="ename-${id}" value="${escHtml(c.name)}" style="width:120px">
+      <input type="color" id="ehex-${id}" value="${c.hex}" style="width:60px;height:36px;padding:2px"
+        oninput="document.getElementById('psw-edit-${id}').style.background=this.value">
+    </div>
+    <div class="palette-actions">
+      <button class="btn-primary btn-sm" onclick="saveColor('${id}')">Simpan</button>
+      <button class="btn-secondary btn-sm" onclick="switchTab('colors')">Batal</button>
+    </div>`;
+}
+
+function saveColor(id){
+  const name=document.getElementById('ename-'+id).value.trim();
+  const hex=document.getElementById('ehex-'+id).value;
+  if(!name){showToast('Nama warna wajib diisi!');return;}
+  const i=state.colors.findIndex(c=>c.id===id);
+  state.colors[i]={...state.colors[i],name,hex};
+  saveState(); renderColorFilter(); renderProducts(); switchTab('colors');
+  showToast('Warna diperbarui! ✓');
+}
+
+function deleteColor(id){
+  const used=state.products.some(p=>p.color===id);
+  if(used){showToast('Warna ini dipakai produk, tidak bisa dihapus!');return;}
+  if(!confirm('Hapus warna ini?')) return;
+  state.colors=state.colors.filter(c=>c.id!==id);
+  saveState(); renderColorFilter(); renderProducts(); switchTab('colors');
+  showToast('Warna dihapus!');
+}
+
+function addColor(){
+  const name=document.getElementById('newColorName').value.trim();
+  const hex=document.getElementById('newColorHex').value;
+  if(!name){showToast('Nama warna wajib diisi!');return;}
+  const id='c'+Date.now();
+  state.colors.push({id,name,hex});
+  saveState(); renderColorFilter(); renderProducts(); switchTab('colors');
+  showToast('Warna "'+name+'" ditambahkan! ✓');
+}
+
+// ═══════════════════════════════════════════════
+// ADMIN: JENIS
+// ═══════════════════════════════════════════════
+function renderTypesManager(){
+  return `<div class="type-manager">
+    <p style="font-size:.85rem;color:var(--text-soft);margin-bottom:8px">Kelola jenis produk yang tersedia sebagai filter katalog.</p>
+    <div class="type-list">${state.types.map(t=>`
+      <div class="type-item">${escHtml(t)}
+        <button class="rm" onclick="removeType('${t}')">×</button>
+      </div>`).join('')}</div>
+    <div class="add-type-row" style="margin-top:16px">
+      <input type="text" id="newTypeName" placeholder="Nama jenis baru..." style="max-width:240px">
+      <button class="btn-primary" onclick="addType()">+ Tambah</button>
+    </div></div>`;
+}
+function addType(){
+  const v=document.getElementById('newTypeName').value.trim();
+  if(!v) return;
+  if(state.types.includes(v)){showToast('Jenis sudah ada!');return;}
+  state.types.push(v); saveState(); renderTypeFilter(); switchTab('types'); showToast('Jenis "'+v+'" ditambahkan!');
+}
+function removeType(t){
+  if(state.types.length<=1){showToast('Minimal 1 jenis!');return;}
+  if(!confirm('Hapus jenis "'+t+'"?')) return;
+  state.types=state.types.filter(x=>x!==t); saveState(); renderTypeFilter(); switchTab('types'); showToast('Jenis dihapus!');
+}
+
+// ═══════════════════════════════════════════════
+// ADMIN: SOSMED & WA
+// ═══════════════════════════════════════════════
+function renderSocialForm(){
+  const s=state.social;
+  return `<div>
+    <p style="font-size:.85rem;color:var(--text-soft);margin-bottom:16px">Atur tautan media sosial yang muncul di ikon melayang, dan nomor WhatsApp admin untuk menerima pesan pesanan dari pelanggan.</p>
+    <div class="social-admin-list">
+      <div class="social-admin-item">
+        <div class="social-icon-prev" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
+        </div>
+        <div class="social-admin-info"><label>Link Instagram</label><input type="url" id="sIG" value="${escHtml(s.ig)}" placeholder="https://instagram.com/..."></div>
+      </div>
+      <div class="social-admin-item">
+        <div class="social-icon-prev" style="background:#000">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.79 1.52V6.76a4.85 4.85 0 01-1.02-.07z"/></svg>
+        </div>
+        <div class="social-admin-info"><label>Link TikTok</label><input type="url" id="sTT" value="${escHtml(s.tt)}" placeholder="https://tiktok.com/@..."></div>
+      </div>
+      <div class="social-admin-item">
+        <div class="social-icon-prev" style="background:#EE4D2D">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.5 2 6 4.5 6 7H4.5A1.5 1.5 0 003 8.5l-1 11A1.5 1.5 0 003.5 21h17a1.5 1.5 0 001.5-1.5l-1-11A1.5 1.5 0 0019.5 7H18c0-2.5-2.5-5-6-5zm0 1.5c2.5 0 4.5 1.8 4.5 3.5H7.5c0-1.7 2-3.5 4.5-3.5zm-3 9.5a3 3 0 006 0"/></svg>
+        </div>
+        <div class="social-admin-info"><label>Link Shopee</label><input type="url" id="sSP" value="${escHtml(s.sp)}" placeholder="https://shopee.co.id/..."></div>
+      </div>
+    </div>
+    <div class="wa-number-section">
+      <h4>Nomor WhatsApp Admin</h4>
+      <p>Nomor ini dipakai untuk menerima pesan pesanan dari pelanggan. Format: kode negara tanpa "+" atau "0" di depan, misal 628123456789.</p>
+      <div class="form-group"><input type="tel" id="sWA" value="${escHtml(s.wa)}" placeholder="628123456789"></div>
+    </div>
+    <div class="form-actions"><button class="btn-primary" onclick="saveSocial()">Simpan Sosial Media & WA</button></div>
+  </div>`;
+}
+function saveSocial(){
+  state.social={
+    ig:document.getElementById('sIG').value.trim(),
+    tt:document.getElementById('sTT').value.trim(),
+    sp:document.getElementById('sSP').value.trim(),
+    wa:document.getElementById('sWA').value.trim().replace(/\D/g,''),
+  };
+  saveState(); renderSocialDock(); showToast('Sosial media & WA disimpan! ✓');
+}
+
+// ═══════════════════════════════════════════════
+// ADMIN: PROFIL
+// ═══════════════════════════════════════════════
+function renderProfileForm(){
+  const p=state.profile;
+  return `<div class="profile-form">
+    <div class="form-group" style="margin-bottom:16px"><label>Nama Brand</label><input type="text" id="pBrand" value="${escHtml(p.brand)}"></div>
+    <div class="form-group" style="margin-bottom:16px"><label>Tagline / Eyebrow Hero</label><input type="text" id="pTagline" value="${escHtml(p.tagline)}"></div>
+    <div class="form-group" style="margin-bottom:16px"><label>Judul Hero</label><input type="text" id="pHeroTitle" value="${escHtml(p.heroTitle)}"></div>
+    <div class="form-group" style="margin-bottom:16px"><label>Deskripsi Hero</label><textarea id="pHeroDesc">${escHtml(p.heroDesc)}</textarea></div>
+    <div class="form-row" style="margin-bottom:16px">
+      <div class="form-group"><label>Stat 1 (misal: 50+)</label><input type="text" id="pStat1" value="${escHtml(p.heroStat1)}"></div>
+      <div class="form-group"><label>Stat 2 (misal: 100%)</label><input type="text" id="pStat2" value="${escHtml(p.heroStat2)}"></div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label>Stat 3 (misal: Hari Ini)</label><input type="text" id="pStat3" value="${escHtml(p.heroStat3)}"></div>
+    <div class="form-group" style="margin-bottom:20px"><label>Teks Footer</label><input type="text" id="pFooter" value="${escHtml(p.footerTagline)}"></div>
+    <button class="btn-primary" onclick="saveProfile()">Simpan Profil</button>
+  </div>`;
+}
+function saveProfile(){
+  state.profile={
+    brand:document.getElementById('pBrand').value.trim()||'Dear Rona',
+    tagline:document.getElementById('pTagline').value.trim(),
+    heroTitle:document.getElementById('pHeroTitle').value.trim(),
+    heroDesc:document.getElementById('pHeroDesc').value.trim(),
+    heroStat1:document.getElementById('pStat1').value.trim(),
+    heroStat2:document.getElementById('pStat2').value.trim(),
+    heroStat3:document.getElementById('pStat3').value.trim(),
+    footerTagline:document.getElementById('pFooter').value.trim(),
+  };
+  saveState(); renderHero(); showToast('Profil disimpan! ✓');
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+createPetals();
+renderHero();
+renderSocialDock();
+renderColorFilter();
+renderTypeFilter();
+renderSizeFilter();
+renderProducts();
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();closeAdmin();closePesan();document.getElementById('loginOverlay').classList.remove('open');}
+});
+</script>
+</body>
+</html>
