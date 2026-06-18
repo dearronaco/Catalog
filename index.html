@@ -474,7 +474,7 @@ footer strong{color:white;font-family:'Playfair Display',serif;font-size:1rem;}
     try {
       const snapMain = await getDoc(doc(db, 'catalog', 'main'));
       const mainData = snapMain.exists() ? snapMain.data() : null;
-      const prodSnaps = await getDocs(collection(db, 'catalog', 'products'));
+      const prodSnaps = await getDocs(collection(db, 'catalog', 'main', 'products'));
       const products = [];
       prodSnaps.forEach(d => products.push(d.data()));
       products.sort((a,b) => (a.id||0) - (b.id||0));
@@ -534,7 +534,7 @@ function saveState(){
     if(products && products.length){
       const batch=writeBatch(db);
       products.forEach(p=>{
-        const ref=doc(collection(db,'catalog','products'), String(p.id));
+        const ref=doc(collection(db,'catalog','main','products'), String(p.id));
         batch.set(ref, p);
       });
       batch.commit()
@@ -1131,7 +1131,7 @@ function deleteProduct(id){
   saveState();
   if(window.fb){
     const {db,doc,collection,deleteDoc}=window.fb;
-    deleteDoc(doc(collection(db,'catalog','products'), String(id)))
+    deleteDoc(doc(collection(db,'catalog','main','products'), String(id)))
       .catch(err=>console.error('Gagal hapus produk dari Firestore:',err));
   }
   renderProducts(); switchTab('products'); showToast('Produk dihapus!');
