@@ -81,7 +81,7 @@ window.runMigration = async function() {
         imageUrl: old.gambar || old.imageUrl || '',
         prices: old.harga ? { S: old.harga, M: old.harga, L: old.harga, XL: old.harga } : (old.prices || { S: 0, M: 0, L: 0, XL: 0 }),
       };
-      const ref = doc(collection(db, 'catalog', 'products'), String(newProduct.id));
+      const ref = doc(collection(db, 'catalog', 'main', 'products'), String(newProduct.id));
       batch.set(ref, newProduct);
       log(`  → Menyalin: ${newProduct.name}`);
       i++;
