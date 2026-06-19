@@ -84,6 +84,7 @@ input[type=range]{width:100%;accent-color:var(--mauve);height:4px;cursor:pointer
 .card-image-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--blush-light);}
 .card-badge{position:absolute;top:12px;left:12px;background:var(--plum);color:var(--white);font-size:.65rem;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:10px;text-transform:uppercase;}
 .card-color-dot{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.card-badge-bestseller{position:absolute;top:12px;right:40px;background:linear-gradient(135deg,#f6c453,#e8a936);color:#5a3d00;font-size:.65rem;font-weight:700;letter-spacing:.04em;padding:3px 10px;border-radius:10px;text-transform:uppercase;box-shadow:0 1px 4px rgba(0,0,0,.15);white-space:nowrap;}
 .card-body{padding:16px;}
 .card-type{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mauve);margin-bottom:4px;}
 .card-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--plum);margin-bottom:6px;line-height:1.3;}
@@ -259,7 +260,12 @@ textarea{resize:vertical;min-height:80px;}
 .admin-item-info{flex:1;}
 .admin-item-name{font-weight:600;font-size:.9rem;color:var(--plum);}
 .admin-item-meta{font-size:.75rem;color:var(--text-soft);margin-top:2px;}
-.admin-item-actions{display:flex;gap:8px;}
+.admin-item-actions{display:flex;gap:8px;align-items:center;}
+.admin-reorder-btns{display:flex;flex-direction:column;gap:2px;}
+.btn-reorder{background:var(--cream);color:var(--plum);border:none;width:28px;height:24px;border-radius:6px;font-size:.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.btn-reorder:disabled{opacity:.3;cursor:not-allowed;}
+.btn-bestseller{background:transparent;border:1.5px solid var(--blush);color:var(--text-soft);padding:6px 12px;border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.btn-bestseller.active{background:linear-gradient(135deg,#f6c453,#e8a936);border-color:#e8a936;color:#5a3d00;}
 .btn-edit{background:var(--cream);color:var(--plum);border:none;padding:7px 14px;border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;cursor:pointer;}
 
 /* PALET */
@@ -673,6 +679,7 @@ function renderProducts(){
     return `<div class="product-card" onclick="openProductModal(${p.id})">
       <div style="position:relative">${img}
         <div class="card-badge">${p.type}</div>
+        ${p.bestSeller?'<div class="card-badge-bestseller">⭐ Best Seller</div>':''}
         <div class="card-color-dot" style="background:${colorHex(p.color)}"></div>
       </div>
       <div class="card-body">
@@ -1013,17 +1020,36 @@ function switchTab(tab){
 // ═══════════════════════════════════════════════
 function renderAdminProductList(){
   if(!state.products.length) return '<p style="color:var(--text-soft);text-align:center;padding:40px">Belum ada produk. Tambah produk baru di tab "+ Tambah".</p>';
-  return `<div class="admin-product-list">${state.products.map(p=>`
+  return `<div class="admin-product-list">${state.products.map((p,idx)=>`
     <div class="admin-product-item">
+      <div class="admin-reorder-btns">
+        <button class="btn-reorder" onclick="moveProduct(${idx},-1)" ${idx===0?'disabled':''} title="Naikkan">▲</button>
+        <button class="btn-reorder" onclick="moveProduct(${idx},1)" ${idx===state.products.length-1?'disabled':''} title="Turunkan">▼</button>
+      </div>
       <div class="admin-thumb">${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:p.emoji||'🌸'}</div>
       <div class="admin-item-info">
         <div class="admin-item-name">${escHtml(p.name)}</div>
         <div class="admin-item-meta">${p.type} · ${colorById(p.color).name} · Mulai ${formatRp(getMinPrice(p))}</div>
       </div>
       <div class="admin-item-actions">
+        <button class="btn-bestseller${p.bestSeller?' active':''}" onclick="toggleBestSeller(${p.id})">${p.bestSeller?'⭐ Best Seller':'☆ Tandai'}</button>
         <button class="btn-edit" onclick="editProduct(${p.id})">Edit</button>
         <button class="btn-danger" onclick="deleteProduct(${p.id})">Hapus</button>
       </div></div>`).join('')}</div>`;
+}
+
+function moveProduct(idx,dir){
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=state.products.length) return;
+  const arr=state.products;
+  [arr[idx],arr[newIdx]]=[arr[newIdx],arr[idx]];
+  saveState(); switchTab('products');
+}
+
+function toggleBestSeller(id){
+  const p=state.products.find(x=>x.id===id); if(!p) return;
+  p.bestSeller=!p.bestSeller;
+  saveState(); renderProducts(); switchTab('products');
 }
 
 function productColorSwatches(selectedId){
@@ -1152,7 +1178,7 @@ function saveProduct(id){
     state.products[i]={...state.products[i],name,type,desc,imageUrl,emoji,color,prices};
     showToast('Produk diperbarui! ✓');
   } else {
-    state.products.push({id:Date.now(),name,type,desc,imageUrl,emoji,color,prices});
+    state.products.push({id:Date.now(),name,type,desc,imageUrl,emoji,color,prices,bestSeller:false});
     showToast('Produk ditambahkan! ✓');
   }
   saveState(); renderProducts(); switchTab('products');
