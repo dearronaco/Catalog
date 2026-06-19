@@ -261,9 +261,10 @@ textarea{resize:vertical;min-height:80px;}
 .admin-item-name{font-weight:600;font-size:.9rem;color:var(--plum);}
 .admin-item-meta{font-size:.75rem;color:var(--text-soft);margin-top:2px;}
 .admin-item-actions{display:flex;gap:8px;align-items:center;}
-.admin-reorder-btns{display:flex;flex-direction:column;gap:2px;}
-.btn-reorder{background:var(--cream);color:var(--plum);border:none;width:28px;height:24px;border-radius:6px;font-size:.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
-.btn-reorder:disabled{opacity:.3;cursor:not-allowed;}
+.drag-handle{cursor:grab;font-size:1.2rem;color:var(--text-soft);padding:0 6px;user-select:none;touch-action:none;}
+.drag-handle:active{cursor:grabbing;}
+.admin-product-item.dragging{opacity:.4;}
+.admin-product-item.drag-over{border-color:var(--plum);box-shadow:0 0 0 2px var(--plum) inset;}
 .btn-bestseller{background:transparent;border:1.5px solid var(--blush);color:var(--text-soft);padding:6px 12px;border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;}
 .btn-bestseller.active{background:linear-gradient(135deg,#f6c453,#e8a936);border-color:#e8a936;color:#5a3d00;}
 .btn-edit{background:var(--cream);color:var(--plum);border:none;padding:7px 14px;border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;cursor:pointer;}
@@ -552,6 +553,7 @@ function saveState(){
 }
 
 // Dipanggil oleh script Firebase (type=module) setelah data dari Firestore datang.
+window.remoteLoaded = false;
 window.onRemoteStateLoaded = function(remote, remoteProducts){
   if(remote){
     if(!remote.social) remote.social={ig:'',tt:'',sp:'',wa:''};
@@ -561,6 +563,7 @@ window.onRemoteStateLoaded = function(remote, remoteProducts){
     state.products = remoteProducts;
     localStorage.setItem('dearRona3',JSON.stringify(state));
   }
+  window.remoteLoaded = true;
   renderHero(); renderSocialDock(); renderColorFilter(); renderTypeFilter(); renderSizeFilter(); renderProducts();
 };
 
@@ -982,6 +985,15 @@ async function doLogin(){
   if(btn){ btn.disabled=true; btn.textContent='Memeriksa...'; }
   try{
     await window.fb.signInWithEmailAndPassword(window.fb.auth, ADMIN_EMAIL, v);
+    // Tunggu data dari Firestore selesai dimuat dulu (maks 5 detik), supaya perubahan
+    // yang dibuat di admin tidak tertimpa data lama begitu fetch awal selesai belakangan.
+    if(!window.remoteLoaded){
+      if(btn) btn.textContent='Menyinkronkan data...';
+      const start=Date.now();
+      while(!window.remoteLoaded && Date.now()-start<5000){
+        await new Promise(r=>setTimeout(r,100));
+      }
+    }
     document.getElementById('loginOverlay').classList.remove('open');
     document.getElementById('adminOverlay').classList.add('open');
     switchTab('products');
@@ -1020,12 +1032,10 @@ function switchTab(tab){
 // ═══════════════════════════════════════════════
 function renderAdminProductList(){
   if(!state.products.length) return '<p style="color:var(--text-soft);text-align:center;padding:40px">Belum ada produk. Tambah produk baru di tab "+ Tambah".</p>';
-  return `<div class="admin-product-list">${state.products.map((p,idx)=>`
-    <div class="admin-product-item">
-      <div class="admin-reorder-btns">
-        <button class="btn-reorder" onclick="moveProduct(${idx},-1)" ${idx===0?'disabled':''} title="Naikkan">▲</button>
-        <button class="btn-reorder" onclick="moveProduct(${idx},1)" ${idx===state.products.length-1?'disabled':''} title="Turunkan">▼</button>
-      </div>
+  return `<div class="admin-product-list" id="adminProductList">${state.products.map((p,idx)=>`
+    <div class="admin-product-item" draggable="true" data-idx="${idx}"
+      ondragstart="onDragStart(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragend="onDragEnd(event)">
+      <div class="drag-handle" title="Geser untuk ubah urutan">⠿</div>
       <div class="admin-thumb">${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:p.emoji||'🌸'}</div>
       <div class="admin-item-info">
         <div class="admin-item-name">${escHtml(p.name)}</div>
@@ -1038,12 +1048,33 @@ function renderAdminProductList(){
       </div></div>`).join('')}</div>`;
 }
 
-function moveProduct(idx,dir){
-  const newIdx=idx+dir;
-  if(newIdx<0||newIdx>=state.products.length) return;
+let dragSrcIdx=null;
+function onDragStart(e){
+  dragSrcIdx=+e.currentTarget.dataset.idx;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function onDragOver(e){
+  e.preventDefault();
+  const target=e.currentTarget;
+  if(+target.dataset.idx===dragSrcIdx) return;
+  target.classList.add('drag-over');
+}
+function onDrop(e){
+  e.preventDefault();
+  const target=e.currentTarget;
+  target.classList.remove('drag-over');
+  const destIdx=+target.dataset.idx;
+  if(dragSrcIdx===null||destIdx===dragSrcIdx) return;
   const arr=state.products;
-  [arr[idx],arr[newIdx]]=[arr[newIdx],arr[idx]];
+  const [moved]=arr.splice(dragSrcIdx,1);
+  arr.splice(destIdx,0,moved);
   saveState(); switchTab('products');
+}
+function onDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.admin-product-item').forEach(el=>el.classList.remove('drag-over'));
+  dragSrcIdx=null;
 }
 
 function toggleBestSeller(id){
