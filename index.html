@@ -484,7 +484,7 @@ footer strong{color:white;font-family:'Playfair Display',serif;font-size:1rem;}
       const prodSnaps = await getDocs(collection(db, 'catalog', 'main', 'products'));
       const products = [];
       prodSnaps.forEach(d => products.push(d.data()));
-      products.sort((a,b) => (a.id||0) - (b.id||0));
+      products.sort((a,b) => (a.order??a.id??0) - (b.order??b.id??0));
       window.onRemoteStateLoaded(mainData, products.length > 0 ? products : null);
     } catch (err) {
       console.error('Gagal memuat data dari Firestore:', err);
@@ -537,12 +537,14 @@ function saveState(){
     const {products,...mainData}=state;
     setDoc(doc(db,'catalog','main'), mainData)
       .catch(err=>{ console.error('Gagal simpan config:',err); showToast('⚠️ Gagal simpan config: '+err.message); });
-    // Simpan setiap produk ke /catalog/products/{id} masing-masing
+    // Simpan setiap produk ke /catalog/main/products/{id} masing-masing,
+    // sertakan field 'order' sesuai posisi array supaya urutan drag-and-drop
+    // tetap terjaga saat data dimuat ulang dari Firestore.
     if(products && products.length){
       const batch=writeBatch(db);
-      products.forEach(p=>{
+      products.forEach((p,idx)=>{
         const ref=doc(collection(db,'catalog','main','products'), String(p.id));
-        batch.set(ref, p);
+        batch.set(ref, {...p, order:idx});
       });
       batch.commit()
         .catch(err=>{ console.error('Gagal simpan produk:',err); showToast('⚠️ Gagal simpan produk: '+err.message); });
