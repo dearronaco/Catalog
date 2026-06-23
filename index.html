@@ -876,12 +876,17 @@ function renderPesanStep(step){
         <label>Nama Pemesan</label>
         <input type="text" id="orderNama" class="nama-input" placeholder="Nama kamu..." value="${escHtml(pesanState.nama||'')}">
       </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label>Request Isi Bucket (opsional)</label>
+        <textarea class="ucapan-area" id="orderRequest" placeholder="Contoh: tolong banyakin bunga mawar, atau hindari bunga lily...">${escHtml(pesanState.requestIsi||'')}</textarea>
+      </div>
       <label class="ucapan-label">Kartu Ucapan (opsional)</label>
       <textarea class="ucapan-area" id="orderUcapan" placeholder="Tulis pesan spesial yang akan disertakan dalam kartu ucapan...">${escHtml(pesanState.ucapan||'')}</textarea>`;
     footer.innerHTML=`
       <button class="btn-secondary" onclick="renderPesanStep(2)">← Kembali</button>
       <button class="btn-primary" onclick="
         pesanState.nama=document.getElementById('orderNama').value.trim();
+        pesanState.requestIsi=document.getElementById('orderRequest').value.trim();
         pesanState.ucapan=document.getElementById('orderUcapan').value.trim();
         renderPesanStep(4);" style="min-width:100px">Lanjut →</button>`;
     return;
@@ -903,6 +908,7 @@ function renderPesanStep(step){
         <div class="summary-row"><span class="label">Ukuran</span><span class="value">${pesanState.size||'–'}</span></div>
         <div class="summary-row"><span class="label">Harga</span><span class="value">${price?formatRp(price):'–'}</span></div>
         ${pesanState.nama?`<div class="summary-row"><span class="label">Pemesan</span><span class="value">${escHtml(pesanState.nama)}</span></div>`:''}
+        ${pesanState.requestIsi?`<div class="summary-row"><span class="label">Request Isi</span><span class="value" style="max-width:240px;text-align:right">${escHtml(pesanState.requestIsi)}</span></div>`:''}
         ${pesanState.ucapan?`<div class="summary-row"><span class="label">Ucapan</span><span class="value" style="max-width:240px;text-align:right">"${escHtml(pesanState.ucapan)}"</span></div>`:''}
       </div>
       <div class="wa-confirm">
@@ -950,6 +956,7 @@ function buildWaBtn(){
   msg+=`📦 Ukuran: ${pesanState.size||'-'}\n`;
   if(colorName) msg+=`🎨 Warna: ${colorName}\n`;
   if(price) msg+=`💰 Harga: ${formatRp(price)}\n`;
+  if(pesanState.requestIsi) msg+=`🌿 Request Isi Bucket: "${pesanState.requestIsi}"\n`;
   if(pesanState.ucapan) msg+=`💌 Kartu Ucapan: "${pesanState.ucapan}"\n`;
   msg+=`\nMohon konfirmasinya, terima kasih! 🙏`;
   const url=`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
