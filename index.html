@@ -1111,24 +1111,29 @@ async function handleWaClick(event, linkEl, tipe) {
 
   // Isi tab kosong itu dengan tampilan loading sederhana, supaya tidak
   // terlihat seperti macet/putih kosong selagi menunggu kirimKeSheet.
-  // Aman ditulis langsung karena tab ini kita buka & kontrol sendiri
-  // (same-origin, bukan tab eksternal).
+  //
+  // PENTING soal encoding: sebelumnya dipakai document.write(), tapi itu
+  // bisa membuat encoding tab "tersangkut" di charset yang salah (bukan
+  // UTF-8) untuk navigasi BERIKUTNYA di tab yang sama -- akibatnya emoji
+  // di pesan WhatsApp setelah redirect berubah jadi simbol "�". Solusi:
+  // pakai data: URL yang charset-nya dinyatakan eksplisit di header MIME
+  // (text/html;charset=utf-8), sehingga tidak ada encoding yang "bocor"
+  // ke halaman WhatsApp yang dimuat setelahnya di tab itu.
   if (waTab) {
-    waTab.document.write(`
-      <!DOCTYPE html><html><head><meta charset="UTF-8">
+    const loadingHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Menghubungkan ke WhatsApp...</title>
       <style>
         body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
           background:#FDF8F5;font-family:Arial,sans-serif;}
         .wrap{text-align:center;color:#4A2030;}
-        .spin{width:36px;height:36px;border:3px solid #F2C4CE;border-top-color:#C4879A;
-          border-radius:50%;margin:0 auto 16px;animation:s .7s linear infinite;}
+        .spin{width:48px;height:48px;border:4px solid #F2C4CE;border-top-color:#C4879A;
+          border-radius:50%;margin:0 auto 18px;animation:s .7s linear infinite;}
         @keyframes s{to{transform:rotate(360deg)}}
-        p{font-size:.95rem;margin:0;}
+        p{font-size:1.1rem;margin:0;}
       </style></head>
-      <body><div class="wrap"><div class="spin"></div><p>🌸 Menghubungkan ke WhatsApp...</p></div></body></html>
-    `);
-    waTab.document.close();
+      <body><div class="wrap"><div class="spin"></div><p>🌸 Menghubungkan ke WhatsApp...</p></div></body></html>`;
+    waTab.location.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(loadingHTML);
   }
 
   const originalHTML = linkEl.innerHTML;
