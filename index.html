@@ -850,9 +850,21 @@ function renderPesanStep(step){
       </div>
       <label class="ucapan-label">Deskripsi Pesanan</label>
       <textarea class="ucapan-area" id="customDesc" placeholder="Contoh: Buket bunga mawar merah ukuran besar untuk anniversary, dengan pita gold, dan kartu ucapan 'Happy Anniversary My Love'...">${escHtml(pesanState.customDesc||'')}</textarea>
-      <div class="form-group">
-        <label>Nomor WA Kamu (opsional)</label>
+      <div class="form-group" style="margin-bottom:14px">
+        <label>Nomor WA Kamu</label>
         <input type="tel" id="customWA" class="nama-input" placeholder="08xx..." value="${escHtml(pesanState.customWA||'')}">
+      </div>
+      <label class="ucapan-label">Kartu Ucapan (opsional)</label>
+      <textarea class="ucapan-area" id="customUcapan" placeholder="Tulis pesan spesial yang akan disertakan dalam kartu ucapan...">${escHtml(pesanState.ucapan||'')}</textarea>
+      <div style="display:flex;gap:12px;margin-bottom:14px">
+        <div class="form-group" style="flex:1">
+          <label>Tanggal Pengambilan</label>
+          <input type="date" id="customTanggal" class="nama-input" value="${escHtml(pesanState.tanggal||'')}" style="cursor:pointer">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>Jam Pengambilan</label>
+          <input type="time" id="customJam" class="nama-input" value="${escHtml(pesanState.jam||'')}" style="cursor:pointer">
+        </div>
       </div>`;
     footer.innerHTML=`
       <button class="btn-secondary" onclick="renderPesanStep(0)">← Kembali</button>
@@ -860,7 +872,13 @@ function renderPesanStep(step){
         pesanState.nama=document.getElementById('customNama').value.trim();
         pesanState.customDesc=document.getElementById('customDesc').value.trim();
         pesanState.customWA=document.getElementById('customWA').value.trim();
+        pesanState.ucapan=document.getElementById('customUcapan').value.trim();
+        pesanState.tanggal=document.getElementById('customTanggal').value;
+        pesanState.jam=document.getElementById('customJam').value;
         if(!pesanState.customDesc){showToast('Ceritakan dulu pesanan kamu!');return;}
+        if(!pesanState.customWA){showToast('Nomor WA kamu wajib diisi!');return;}
+        if(!pesanState.tanggal){showToast('Pilih tanggal pengambilan dulu!');return;}
+        if(!pesanState.jam){showToast('Pilih jam pengambilan dulu!');return;}
         renderPesanStep('custom-confirm');" style="min-width:100px">Lanjut →</button>`;
     return;
   }
@@ -881,13 +899,27 @@ function renderPesanStep(step){
         <textarea class="ucapan-area" id="orderRequest" placeholder="Contoh: tolong banyakin bunga mawar, atau hindari bunga lily...">${escHtml(pesanState.requestIsi||'')}</textarea>
       </div>
       <label class="ucapan-label">Kartu Ucapan (opsional)</label>
-      <textarea class="ucapan-area" id="orderUcapan" placeholder="Tulis pesan spesial yang akan disertakan dalam kartu ucapan...">${escHtml(pesanState.ucapan||'')}</textarea>`;
+      <textarea class="ucapan-area" id="orderUcapan" placeholder="Tulis pesan spesial yang akan disertakan dalam kartu ucapan...">${escHtml(pesanState.ucapan||'')}</textarea>
+      <div style="display:flex;gap:12px;margin-bottom:14px">
+        <div class="form-group" style="flex:1">
+          <label>Tanggal Pengambilan</label>
+          <input type="date" id="orderTanggal" class="nama-input" value="${escHtml(pesanState.tanggal||'')}" style="cursor:pointer">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>Jam Pengambilan</label>
+          <input type="time" id="orderJam" class="nama-input" value="${escHtml(pesanState.jam||'')}" style="cursor:pointer">
+        </div>
+      </div>`;
     footer.innerHTML=`
       <button class="btn-secondary" onclick="renderPesanStep(2)">← Kembali</button>
       <button class="btn-primary" onclick="
         pesanState.nama=document.getElementById('orderNama').value.trim();
         pesanState.requestIsi=document.getElementById('orderRequest').value.trim();
         pesanState.ucapan=document.getElementById('orderUcapan').value.trim();
+        pesanState.tanggal=document.getElementById('orderTanggal').value;
+        pesanState.jam=document.getElementById('orderJam').value;
+        if(!pesanState.tanggal){showToast('Pilih tanggal pengambilan dulu!');return;}
+        if(!pesanState.jam){showToast('Pilih jam pengambilan dulu!');return;}
         renderPesanStep(4);" style="min-width:100px">Lanjut →</button>`;
     return;
   }
@@ -910,6 +942,8 @@ function renderPesanStep(step){
         ${pesanState.nama?`<div class="summary-row"><span class="label">Pemesan</span><span class="value">${escHtml(pesanState.nama)}</span></div>`:''}
         ${pesanState.requestIsi?`<div class="summary-row"><span class="label">Request Isi</span><span class="value" style="max-width:240px;text-align:right">${escHtml(pesanState.requestIsi)}</span></div>`:''}
         ${pesanState.ucapan?`<div class="summary-row"><span class="label">Ucapan</span><span class="value" style="max-width:240px;text-align:right">"${escHtml(pesanState.ucapan)}"</span></div>`:''}
+        ${pesanState.tanggal?`<div class="summary-row"><span class="label">Tanggal Ambil</span><span class="value">${escHtml(pesanState.tanggal)}</span></div>`:''}
+        ${pesanState.jam?`<div class="summary-row"><span class="label">Jam Ambil</span><span class="value">${escHtml(pesanState.jam)}</span></div>`:''}
       </div>
       <div class="wa-confirm">
         <div class="wa-icon">💬</div>
@@ -932,6 +966,9 @@ function renderPesanStep(step){
         <div class="summary-row"><span class="label">Deskripsi Pesanan</span></div>
         <div style="padding:10px 0;font-size:.85rem;color:var(--text);line-height:1.6">"${escHtml(pesanState.customDesc)}"</div>
         ${pesanState.customWA?`<div class="summary-row"><span class="label">WA Kamu</span><span class="value">${escHtml(pesanState.customWA)}</span></div>`:''}
+        ${pesanState.ucapan?`<div class="summary-row"><span class="label">Kartu Ucapan</span><span class="value" style="max-width:240px;text-align:right">"${escHtml(pesanState.ucapan)}"</span></div>`:''}
+        ${pesanState.tanggal?`<div class="summary-row"><span class="label">Tanggal Ambil</span><span class="value">${escHtml(pesanState.tanggal)}</span></div>`:''}
+        ${pesanState.jam?`<div class="summary-row"><span class="label">Jam Ambil</span><span class="value">${escHtml(pesanState.jam)}</span></div>`:''}
       </div>
       <div class="wa-confirm">
         <div class="wa-icon">💬</div>
@@ -941,6 +978,26 @@ function renderPesanStep(step){
       </div>`;
     footer.innerHTML=`<button class="btn-secondary" onclick="renderPesanStep('custom-detail')">← Kembali</button>`;
     return;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// GOOGLE SHEETS INTEGRATION
+// ═══════════════════════════════════════════════
+// Ganti nilai ini dengan URL deployment Apps Script kamu setelah deploy
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz2eZ1pwqXQB4Ev0mc3E46Xuw8ZTUu1g5z8W0uBdH1No2BtG6L7Ryuf1jLirSagUW_UA/exec';
+
+async function kirimKeSheet(data){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL==='GANTI_DENGAN_URL_APPS_SCRIPT_KAMU') return;
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(data),
+      mode:'no-cors'
+    });
+  }catch(e){
+    console.warn('Gagal kirim ke sheet:',e);
   }
 }
 
@@ -958,9 +1015,11 @@ function buildWaBtn(){
   if(price) msg+=`💰 Harga: ${formatRp(price)}\n`;
   if(pesanState.requestIsi) msg+=`🌿 Request Isi Bucket: "${pesanState.requestIsi}"\n`;
   if(pesanState.ucapan) msg+=`💌 Kartu Ucapan: "${pesanState.ucapan}"\n`;
+  if(pesanState.tanggal) msg+=`📅 Tanggal Pengambilan: ${pesanState.tanggal}\n`;
+  if(pesanState.jam) msg+=`⏰ Jam Pengambilan: ${pesanState.jam}\n`;
   msg+=`\nMohon konfirmasinya, terima kasih! 🙏`;
   const url=`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-  return `<a class="btn-wa" href="${url}" target="_blank">
+  return `<a class="btn-wa" href="${url}" target="_blank" onclick="kirimKeSheet({nama:${JSON.stringify(pesanState.nama||'')},tanggal:${JSON.stringify(pesanState.tanggal||'')},jam:${JSON.stringify(pesanState.jam||'')},tipe:'standard',produk:${JSON.stringify(p?p.name:'')}})">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     Pesan via WhatsApp
   </a>`;
@@ -973,9 +1032,12 @@ function buildWaBtnCustom(){
   if(pesanState.nama) msg+=`👤 Nama: ${pesanState.nama}\n`;
   msg+=`📝 Detail Pesanan:\n${pesanState.customDesc}\n`;
   if(pesanState.customWA) msg+=`📱 WA Saya: ${pesanState.customWA}\n`;
+  if(pesanState.ucapan) msg+=`💌 Kartu Ucapan: "${pesanState.ucapan}"\n`;
+  if(pesanState.tanggal) msg+=`📅 Tanggal Pengambilan: ${pesanState.tanggal}\n`;
+  if(pesanState.jam) msg+=`⏰ Jam Pengambilan: ${pesanState.jam}\n`;
   msg+=`\nMohon konfirmasinya, terima kasih! 🙏`;
   const url=`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-  return `<a class="btn-wa" href="${url}" target="_blank">
+  return `<a class="btn-wa" href="${url}" target="_blank" onclick="kirimKeSheet({nama:${JSON.stringify(pesanState.nama||'')},tanggal:${JSON.stringify(pesanState.tanggal||'')},jam:${JSON.stringify(pesanState.jam||'')},tipe:'custom',produk:'Custom Order'})">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     Kirim Custom Order via WA
   </a>`;
