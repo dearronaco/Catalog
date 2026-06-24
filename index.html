@@ -998,20 +998,21 @@ function kirimKeSheet(data){
     produk: data.produk||''
   });
   try{
-    // sendBeacon dijamin browser tetap terkirim walau halaman langsung
-    // ditinggal (misal pindah ke app WhatsApp begitu tombol diklik).
-    // Ini jauh lebih andal dibanding teknik Image src yang bisa putus
-    // di tengah jalan kalau halaman langsung di-background.
-    if(navigator.sendBeacon){
-      const blob=new Blob([payload],{type:'text/plain;charset=UTF-8'});
-      const ok=navigator.sendBeacon(APPS_SCRIPT_URL, blob);
-      if(ok) return;
-    }
-    // Fallback untuk browser lama yang tidak dukung sendBeacon.
-    const xhr=new XMLHttpRequest();
-    xhr.open('POST', APPS_SCRIPT_URL, false); // sinkron, supaya sempat selesai sebelum halaman pindah
-    xhr.setRequestHeader('Content-Type','text/plain;charset=UTF-8');
-    xhr.send(payload);
+    // PENTING: Apps Script Web App (.../exec) selalu menjawab dengan redirect
+    // 302 ke script.googleusercontent.com, dan doPost baru benar-benar
+    // dieksekusi di balik redirect itu. navigator.sendBeacon() TIDAK
+    // mengikuti redirect ini di kebanyakan browser, jadi requestnya
+    // berhenti di tengah jalan tanpa pernah memanggil doPost. fetch()
+    // dengan keepalive:true punya jaminan "tetap terkirim walau halaman
+    // ditinggal" yang sama seperti sendBeacon, TAPI tetap mengikuti
+    // redirect (default behavior fetch), jadi ini yang dipakai.
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: true,
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: payload
+    }).catch(err => console.warn('Gagal kirim ke sheet (fetch):', err));
   }catch(e){
     console.warn('Gagal kirim ke sheet:',e);
   }
