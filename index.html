@@ -896,7 +896,7 @@ function renderPesanStep(step){
       </div>
       <div class="form-group" style="margin-bottom:14px">
         <label>Request Isi Bucket (opsional)</label>
-        <textarea class="ucapan-area" id="orderRequest" placeholder="Contoh: tolong banyakin bunga mawar, atau hindari bunga lily...">${escHtml(pesanState.requestIsi||'')}</textarea>
+        <textarea class="ucapan-area" id="orderRequest" placeholder="Contoh: tolong banyakin bunga warna pink...">${escHtml(pesanState.requestIsi||'')}</textarea>
       </div>
       <label class="ucapan-label">Kartu Ucapan (opsional)</label>
       <textarea class="ucapan-area" id="orderUcapan" placeholder="Tulis pesan spesial yang akan disertakan dalam kartu ucapan...">${escHtml(pesanState.ucapan||'')}</textarea>
@@ -984,18 +984,21 @@ function renderPesanStep(step){
 // ═══════════════════════════════════════════════
 // GOOGLE SHEETS INTEGRATION
 // ═══════════════════════════════════════════════
-// Ganti nilai ini dengan URL deployment Apps Script kamu setelah deploy
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz2eZ1pwqXQB4Ev0mc3E46Xuw8ZTUu1g5z8W0uBdH1No2BtG6L7Ryuf1jLirSagUW_UA/exec';
 
-async function kirimKeSheet(data){
-  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL==='GANTI_DENGAN_URL_APPS_SCRIPT_KAMU') return;
+function kirimKeSheet(data){
+  if(!APPS_SCRIPT_URL) return;
   try{
-    await fetch(APPS_SCRIPT_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify(data),
-      mode:'no-cors'
+    const params=new URLSearchParams({
+      nama: data.nama||'',
+      tanggal: data.tanggal||'',
+      jam: data.jam||'',
+      tipe: data.tipe||'',
+      produk: data.produk||''
     });
+    const url=APPS_SCRIPT_URL+'?'+params.toString();
+    const img=new Image();
+    img.src=url;
   }catch(e){
     console.warn('Gagal kirim ke sheet:',e);
   }
