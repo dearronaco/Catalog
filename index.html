@@ -1070,11 +1070,19 @@ function clearPendingSync(payload) {
   }
 }
 
-// Mencegah tab WA terbuka instan supaya kirimKeSheet (termasuk retry-nya)
-// sempat berjalan dulu. Begitu selesai (sukses ATAU gagal), tab WA tetap
-// dibuka -- proses order pelanggan tidak boleh terhambat oleh masalah sheet.
+// PENTING soal popup blocker: window.open() hanya dianggap aksi langsung
+// pengguna (tidak diblokir) kalau dipanggil SEGERA saat event klik, tanpa
+// menunggu apa pun lebih dulu. Kalau dipanggil setelah "await fetch(...)",
+// browser sudah lewat beberapa ratus ms dan menganggapnya popup, lalu
+// memunculkan notifikasi izin/blokir popup.
 //
-// PENTING: data order dibaca langsung dari pesanState/argumen JS biasa,
+// Solusi: buka tab kosong ('about:blank') SEKETIKA saat klik (ini dianggap
+// aksi pengguna, lolos popup blocker), baru arahkan tab itu ke URL WA
+// setelah kirimKeSheet selesai. Tab tetap langsung terbuka tanpa notifikasi
+// popup, hanya isinya menyusul sedikit lebih lambat (blank sebentar lalu
+// memuat WhatsApp).
+//
+// PENTING soal data: dibaca langsung dari pesanState/argumen JS biasa,
 // BUKAN dari literal JSON yang ditempel ke atribut onclick="...". Menaruh
 // JSON.stringify(...) di dalam onclick="" yang dibungkus tanda kutip ganda
 // menyebabkan tanda kutip di dalam JSON (mis. "Rey") menutup atribut HTML
@@ -1098,6 +1106,31 @@ async function handleWaClick(event, linkEl, tipe) {
     produk:  tipe === 'custom' ? 'Custom Order' : (p ? p.name : '')
   };
 
+  // Buka tab kosong SEKARANG, selagi masih dianggap aksi klik langsung.
+  const waTab = window.open('about:blank', '_blank');
+
+  // Isi tab kosong itu dengan tampilan loading sederhana, supaya tidak
+  // terlihat seperti macet/putih kosong selagi menunggu kirimKeSheet.
+  // Aman ditulis langsung karena tab ini kita buka & kontrol sendiri
+  // (same-origin, bukan tab eksternal).
+  if (waTab) {
+    waTab.document.write(`
+      <!DOCTYPE html><html><head><meta charset="UTF-8">
+      <title>Menghubungkan ke WhatsApp...</title>
+      <style>
+        body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
+          background:#FDF8F5;font-family:Arial,sans-serif;}
+        .wrap{text-align:center;color:#4A2030;}
+        .spin{width:36px;height:36px;border:3px solid #F2C4CE;border-top-color:#C4879A;
+          border-radius:50%;margin:0 auto 16px;animation:s .7s linear infinite;}
+        @keyframes s{to{transform:rotate(360deg)}}
+        p{font-size:.95rem;margin:0;}
+      </style></head>
+      <body><div class="wrap"><div class="spin"></div><p>🌸 Menghubungkan ke WhatsApp...</p></div></body></html>
+    `);
+    waTab.document.close();
+  }
+
   const originalHTML = linkEl.innerHTML;
   linkEl.innerHTML = `<span class="wa-spinner"></span> Mengirim pesanan...`;
   linkEl.style.opacity = '0.75';
@@ -1105,7 +1138,14 @@ async function handleWaClick(event, linkEl, tipe) {
   linkEl.style.cursor = 'default';
 
   await kirimKeSheet(data);
-  window.open(href, '_blank');
+
+  if (waTab && !waTab.closed) {
+    waTab.location.href = href;
+  } else {
+    // Fallback jarang terjadi: tab kosong tadi sempat ditutup pelanggan,
+    // atau browser tetap memblokirnya. Coba buka ulang sebagai cadangan.
+    window.open(href, '_blank');
+  }
 
   linkEl.innerHTML = originalHTML;
   linkEl.style.opacity = '1';
