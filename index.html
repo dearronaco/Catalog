@@ -986,33 +986,26 @@ function renderPesanStep(step){
 // ═══════════════════════════════════════════════
 // GOOGLE SHEETS INTEGRATION
 // ═══════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz2eZ1pwqXQB4Ev0mc3E46Xuw8ZTUu1g5z8W0uBdH1No2BtG6L7Ryuf1jLirSagUW_UA/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6jI2BDi--2PZ5QlOaRATkR636hqJp_d_KqOYUUsCMxdfQnyDcaqZEf8h9CqmPfG6IPQ/exec';
+// ⚠️ Setiap kali Apps Script diubah, HARUS deploy ulang sebagai "New deployment"
+// lalu ganti URL di sini. URL lama tetap menjalankan versi lama.
 
-function kirimKeSheet(data){
-  if(!APPS_SCRIPT_URL) return;
-  const payload=JSON.stringify({
-    nama: data.nama||'',
-    tanggal: data.tanggal||'',
-    jam: data.jam||'',
-    tipe: data.tipe||'',
-    produk: data.produk||''
+function kirimKeSheet(data) {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('GANTI')) return;
+  const payload = JSON.stringify({
+    nama:    data.nama    || '',
+    tanggal: data.tanggal || '',
+    jam:     data.jam     || '',
+    tipe:    data.tipe    || '',
+    produk:  data.produk  || ''
   });
-  try{
-    // PENTING: Apps Script Web App (.../exec) selalu menjawab dengan redirect
-    // 302 ke script.googleusercontent.com, dan doPost baru benar-benar
-    // dieksekusi di balik redirect itu. navigator.sendBeacon() TIDAK
-    // mengikuti redirect ini di kebanyakan browser, jadi requestnya
-    // berhenti di tengah jalan tanpa pernah memanggil doPost. fetch()
-    // dengan keepalive:true punya jaminan "tetap terkirim walau halaman
-    // ditinggal" yang sama seperti sendBeacon, TAPI tetap mengikuti
-    // redirect (default behavior fetch), jadi ini yang dipakai.
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      keepalive: true,
-      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-      body: payload
-    }).catch(err => console.warn('Gagal kirim ke sheet (fetch):', err));
+  fetch(APPS_SCRIPT_URL, {
+    method:    'POST',
+    mode:      'no-cors',   // Apps Script tidak kirim CORS header, ini wajib
+    keepalive: true,        // tetap terkirim walau user langsung tutup tab
+    headers:   { 'Content-Type': 'text/plain;charset=UTF-8' },
+    body:      payload
+  }).catch(err => console.warn('kirimKeSheet gagal:', err));
   }catch(e){
     console.warn('Gagal kirim ke sheet:',e);
   }
