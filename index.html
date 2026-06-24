@@ -990,17 +990,28 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz2eZ1pwqXQB4E
 
 function kirimKeSheet(data){
   if(!APPS_SCRIPT_URL) return;
+  const payload=JSON.stringify({
+    nama: data.nama||'',
+    tanggal: data.tanggal||'',
+    jam: data.jam||'',
+    tipe: data.tipe||'',
+    produk: data.produk||''
+  });
   try{
-    const params=new URLSearchParams({
-      nama: data.nama||'',
-      tanggal: data.tanggal||'',
-      jam: data.jam||'',
-      tipe: data.tipe||'',
-      produk: data.produk||''
-    });
-    const url=APPS_SCRIPT_URL+'?'+params.toString();
-    const img=new Image();
-    img.src=url;
+    // sendBeacon dijamin browser tetap terkirim walau halaman langsung
+    // ditinggal (misal pindah ke app WhatsApp begitu tombol diklik).
+    // Ini jauh lebih andal dibanding teknik Image src yang bisa putus
+    // di tengah jalan kalau halaman langsung di-background.
+    if(navigator.sendBeacon){
+      const blob=new Blob([payload],{type:'text/plain;charset=UTF-8'});
+      const ok=navigator.sendBeacon(APPS_SCRIPT_URL, blob);
+      if(ok) return;
+    }
+    // Fallback untuk browser lama yang tidak dukung sendBeacon.
+    const xhr=new XMLHttpRequest();
+    xhr.open('POST', APPS_SCRIPT_URL, false); // sinkron, supaya sempat selesai sebelum halaman pindah
+    xhr.setRequestHeader('Content-Type','text/plain;charset=UTF-8');
+    xhr.send(payload);
   }catch(e){
     console.warn('Gagal kirim ke sheet:',e);
   }
