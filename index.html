@@ -198,6 +198,8 @@ input[type=range]{width:100%;accent-color:var(--mauve);height:4px;cursor:pointer
 .wa-confirm h3{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--plum);margin-bottom:8px;}
 .wa-confirm p{font-size:.85rem;color:var(--text-soft);line-height:1.6;max-width:380px;margin:0 auto;}
 .btn-wa{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:white;border:none;padding:13px 28px;border-radius:30px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:20px;text-decoration:none;transition:background .2s,transform .15s;}
+.wa-spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:waSpin .7s linear infinite;}
+@keyframes waSpin{to{transform:rotate(360deg)}}
 .btn-wa:hover{background:#1ebe5d;transform:translateY(-2px);}
 
 /* Btn styles */
@@ -1077,8 +1079,15 @@ function clearPendingSync(payload) {
 // JSON.stringify(...) di dalam onclick="" yang dibungkus tanda kutip ganda
 // menyebabkan tanda kutip di dalam JSON (mis. "Rey") menutup atribut HTML
 // lebih awal, memotong kode JS di tengah jalan -> SyntaxError saat parse.
+//
+// Selama menunggu, isi tombol diganti teks "Mengirim..." + spinner supaya
+// pelanggan tahu kliknya terdaftar dan tidak klik berulang (pointerEvents
+// juga dimatikan sebagai pengaman tambahan, bukan satu-satunya pencegah).
 async function handleWaClick(event, linkEl, tipe) {
   event.preventDefault();
+  if (linkEl.dataset.sending === '1') return; // pengaman ekstra: cegah re-entry
+  linkEl.dataset.sending = '1';
+
   const href = linkEl.getAttribute('href');
   const p = pesanState._product;
   const data = {
@@ -1088,12 +1097,21 @@ async function handleWaClick(event, linkEl, tipe) {
     tipe:    tipe,
     produk:  tipe === 'custom' ? 'Custom Order' : (p ? p.name : '')
   };
-  linkEl.style.opacity = '0.6';
+
+  const originalHTML = linkEl.innerHTML;
+  linkEl.innerHTML = `<span class="wa-spinner"></span> Mengirim pesanan...`;
+  linkEl.style.opacity = '0.75';
   linkEl.style.pointerEvents = 'none';
+  linkEl.style.cursor = 'default';
+
   await kirimKeSheet(data);
   window.open(href, '_blank');
+
+  linkEl.innerHTML = originalHTML;
   linkEl.style.opacity = '1';
   linkEl.style.pointerEvents = 'auto';
+  linkEl.style.cursor = 'pointer';
+  linkEl.dataset.sending = '0';
 }
 
 function buildWaBtn(){
