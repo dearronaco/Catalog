@@ -896,7 +896,7 @@ function renderPesanStep(step){
       </div>
       <div class="form-group" style="margin-bottom:14px">
         <label>Request Isi Bucket (opsional)</label>
-        <textarea class="ucapan-area" id="orderRequest" placeholder="Contoh: tolong banyakin bunga warna pink...">${escHtml(pesanState.requestIsi||'')}</textarea>
+        <textarea class="ucapan-area" id="orderRequest" placeholder="Contoh: tolong banyakin bunga mawar, atau hindari bunga lily...">${escHtml(pesanState.requestIsi||'')}</textarea>
       </div>
       <label class="ucapan-label">Kartu Ucapan (opsional)</label>
       <textarea class="ucapan-area" id="orderUcapan" placeholder="Tulis pesan spesial yang akan disertakan dalam kartu ucapan...">${escHtml(pesanState.ucapan||'')}</textarea>
@@ -984,7 +984,7 @@ function renderPesanStep(step){
 // ═══════════════════════════════════════════════
 // GOOGLE SHEETS INTEGRATION
 // ═══════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTPVLwRMNXSRZxpDBfgj6A84ztnMEeW_2iwC_OWfMTFZYw8Cj-rDxBmhWSnf_fGn4AupKYYET9_nDtkX9rODVv89LhwdR3EmhhRmQRkCp23Qgv9TkhE4Fn2DFzU2hE1OPLDoOM6TcKjNb7O-QC4gv4ibB-uOFKQ-9X7SfICxoO3sXJWjTkVnrLR-Q5rabStnDvXr6_aF8aoof5hB6RKka9-0_e8FIvJ3RZ7CZSoVN5U5carh6sRSVo_gg5zdw_RXG101i1OZ3GSOLMJE82S-aG0gXQPnKGB5JM2x6dhmIfoSD-F5fOSygTGWx9P-gsdrjHC2rd9eHV7zrpmwZjiqu2EbSLLXjADpRdtBpiqu2vaJhcSsXGTEq9hGRF43g&lib=MU1Zr_30Mlc-Sz1RQIaftlyCeCYKy23xy';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz2eZ1pwqXQB4Ev0mc3E46Xuw8ZTUu1g5z8W0uBdH1No2BtG6L7Ryuf1jLirSagUW_UA/exec';
 
 function kirimKeSheet(data){
   if(!APPS_SCRIPT_URL) return;
