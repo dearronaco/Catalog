@@ -984,28 +984,102 @@ function renderPesanStep(step){
 }
 
 // ═══════════════════════════════════════════════
-// GOOGLE SHEETS INTEGRATION
+// GOOGLE SHEETS INTEGRATION (v2)
 // ═══════════════════════════════════════════════
+// v2: tidak lagi pakai mode:'no-cors', supaya respons sukses/gagal dari
+// Apps Script bisa dibaca. Ada retry sekali untuk gangguan jaringan
+// sesaat, dan cadangan localStorage + toast peringatan jika tetap gagal.
+// WhatsApp tetap dibuka terlepas dari hasil sinkronisasi ini -- lihat
+// fungsi handleWaClick di bawah.
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6jI2BDi--2PZ5QlOaRATkR636hqJp_d_KqOYUUsCMxdfQnyDcaqZEf8h9CqmPfG6IPQ/exec';
 // ⚠️ Setiap kali Apps Script diubah, HARUS deploy ulang sebagai "New deployment"
 // lalu ganti URL di sini. URL lama tetap menjalankan versi lama.
 
-function kirimKeSheet(data) {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('GANTI')) return;
-  const payload = JSON.stringify({
+async function kirimKeSheet(data, attempt = 1) {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('GANTI')) return false;
+
+  const payload = {
     nama:    data.nama    || '',
     tanggal: data.tanggal || '',
     jam:     data.jam     || '',
     tipe:    data.tipe    || '',
     produk:  data.produk  || ''
-  });
-  fetch(APPS_SCRIPT_URL, {
-    method:    'POST',
-    mode:      'no-cors',
-    keepalive: true,
-    headers:   { 'Content-Type': 'text/plain;charset=UTF-8' },
-    body:      payload
-  }).catch(err => console.warn('kirimKeSheet gagal:', err));
+  };
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body:    JSON.stringify(payload)
+    });
+
+    let result;
+    try {
+      result = await res.json();
+    } catch (parseErr) {
+      throw new Error('Respons server tidak bisa dibaca (bukan JSON).');
+    }
+
+    if (!res.ok || result.status !== 'ok') {
+      throw new Error(result.message || ('HTTP ' + res.status));
+    }
+
+    clearPendingSync(payload);
+    return true;
+
+  } catch (err) {
+    console.warn('kirimKeSheet gagal (percobaan ' + attempt + '):', err.message);
+
+    if (attempt < 2) {
+      await new Promise(r => setTimeout(r, 2000));
+      return kirimKeSheet(data, attempt + 1);
+    }
+
+    savePendingSync(payload, err.message);
+    showToast('⚠️ Pesanan terkirim via WA, tapi gagal sinkron ke sheet otomatis. Cek manual ya.');
+    return false;
+  }
+}
+
+// Cadangan lokal PER BROWSER/DEVICE jika sinkronisasi ke sheet gagal total
+// setelah retry. Hanya jejak untuk kasus dispute -- sumber kebenaran utama
+// tetap ringkasan order yang sudah lengkap di pesan WhatsApp.
+function savePendingSync(payload, errorMsg) {
+  try {
+    const key = 'dearRona_pendingSync';
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    list.push({ ...payload, error: errorMsg, savedAt: new Date().toISOString() });
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch (e) {
+    console.warn('Gagal simpan cadangan lokal:', e);
+  }
+}
+
+function clearPendingSync(payload) {
+  try {
+    const key = 'dearRona_pendingSync';
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    const filtered = list.filter(item =>
+      !(item.nama === payload.nama && item.tanggal === payload.tanggal && item.jam === payload.jam)
+    );
+    localStorage.setItem(key, JSON.stringify(filtered));
+  } catch (e) {
+    console.warn('Gagal bersihkan cadangan lokal:', e);
+  }
+}
+
+// Mencegah tab WA terbuka instan supaya kirimKeSheet (termasuk retry-nya)
+// sempat berjalan dulu. Begitu selesai (sukses ATAU gagal), tab WA tetap
+// dibuka -- proses order pelanggan tidak boleh terhambat oleh masalah sheet.
+async function handleWaClick(event, linkEl, data) {
+  event.preventDefault();
+  const href = linkEl.getAttribute('href');
+  linkEl.style.opacity = '0.6';
+  linkEl.style.pointerEvents = 'none';
+  await kirimKeSheet(data);
+  window.open(href, '_blank');
+  linkEl.style.opacity = '1';
+  linkEl.style.pointerEvents = 'auto';
 }
 
 function buildWaBtn(){
@@ -1026,7 +1100,7 @@ function buildWaBtn(){
   if(pesanState.jam) msg+=`⏰ Jam Pengambilan: ${pesanState.jam}\n`;
   msg+=`\nMohon konfirmasinya, terima kasih! 🙏`;
   const url=`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-  return `<a class="btn-wa" href="${url}" target="_blank" onclick="kirimKeSheet({nama:${JSON.stringify(pesanState.nama||'')},tanggal:${JSON.stringify(pesanState.tanggal||'')},jam:${JSON.stringify(pesanState.jam||'')},tipe:'standard',produk:${JSON.stringify(p?p.name:'')}})">
+  return `<a class="btn-wa" href="${url}" target="_blank" onclick="handleWaClick(event,this,{nama:${JSON.stringify(pesanState.nama||'')},tanggal:${JSON.stringify(pesanState.tanggal||'')},jam:${JSON.stringify(pesanState.jam||'')},tipe:'standard',produk:${JSON.stringify(p?p.name:'')}})">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     Pesan via WhatsApp
   </a>`;
@@ -1044,7 +1118,7 @@ function buildWaBtnCustom(){
   if(pesanState.jam) msg+=`⏰ Jam Pengambilan: ${pesanState.jam}\n`;
   msg+=`\nMohon konfirmasinya, terima kasih! 🙏`;
   const url=`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-  return `<a class="btn-wa" href="${url}" target="_blank" onclick="kirimKeSheet({nama:${JSON.stringify(pesanState.nama||'')},tanggal:${JSON.stringify(pesanState.tanggal||'')},jam:${JSON.stringify(pesanState.jam||'')},tipe:'custom',produk:'Custom Order'})">
+  return `<a class="btn-wa" href="${url}" target="_blank" onclick="handleWaClick(event,this,{nama:${JSON.stringify(pesanState.nama||'')},tanggal:${JSON.stringify(pesanState.tanggal||'')},jam:${JSON.stringify(pesanState.jam||'')},tipe:'custom',produk:'Custom Order'})">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     Kirim Custom Order via WA
   </a>`;
