@@ -875,6 +875,7 @@ function renderPesanStep(step){
         pesanState.ucapan=document.getElementById('customUcapan').value.trim();
         pesanState.tanggal=document.getElementById('customTanggal').value;
         pesanState.jam=document.getElementById('customJam').value;
+        if(!pesanState.nama){showToast('Nama pemesan wajib diisi!');return;}
         if(!pesanState.customDesc){showToast('Ceritakan dulu pesanan kamu!');return;}
         if(!pesanState.customWA){showToast('Nomor WA kamu wajib diisi!');return;}
         if(!pesanState.tanggal){showToast('Pilih tanggal pengambilan dulu!');return;}
@@ -918,6 +919,7 @@ function renderPesanStep(step){
         pesanState.ucapan=document.getElementById('orderUcapan').value.trim();
         pesanState.tanggal=document.getElementById('orderTanggal').value;
         pesanState.jam=document.getElementById('orderJam').value;
+        if(!pesanState.nama){showToast('Nama pemesan wajib diisi!');return;}
         if(!pesanState.tanggal){showToast('Pilih tanggal pengambilan dulu!');return;}
         if(!pesanState.jam){showToast('Pilih jam pengambilan dulu!');return;}
         renderPesanStep(4);" style="min-width:100px">Lanjut →</button>`;
